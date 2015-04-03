@@ -1,0 +1,16 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/main_black</item>
+        <item name="colorPrimaryDark">@color/main_red</item>
+        <item name="colorAccent">@color/accent_pink</item>
+        <item name="android:background">@color/main_white</item>
+        <item name="android:actionBarStyle">@style/MyActionBarStyle</item> -->
+    </style>
+
+    <style name="MyActionBarStyle" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:displayOptions">useLogo|showHome</item>
+    </style>
+
+</resources>
