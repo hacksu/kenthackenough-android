@@ -1,6 +1,7 @@
 package io.khe.kenthackenough;
 
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -22,16 +23,29 @@ import java.util.Timer;
  * A simple {@link Fragment} subclass.
  */
 public class LiveFeedFragment extends Fragment {
-    private Timer mTimer = new Timer();
     private LiveFeedManager liveFeedManager;
-
-    public LiveFeedFragment() {
-        // Required empty public constructor
-    }
+    public static boolean mActive = false;
+    public LiveFeedFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mActive = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mActive = false;
     }
 
     @Override

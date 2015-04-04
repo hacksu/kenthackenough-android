@@ -1,6 +1,7 @@
 package io.khe.kenthackenough;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Fragment;
@@ -15,8 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -27,6 +26,7 @@ public class MainActivity extends ActionBarActivity {
     private DrawerLayout mViewDrawerLayout;
     private ListView mViewDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+    private ApplicationWithStorage mCustomApplication;
 
     private int mCurrentView = 0;
 
@@ -50,6 +50,9 @@ public class MainActivity extends ActionBarActivity {
         mViewDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.text_list_item, mViewTitles));
         mViewDrawerList.setOnItemClickListener(new ViewDrawerClickListener());
 
+        Intent intent = getIntent();
+        mCurrentView = intent.getIntExtra("view", mCurrentView);
+
         selectView(mCurrentView);
 
         // todo add actual icons here built for purpose
@@ -59,8 +62,10 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        mCustomApplication = (ApplicationWithStorage) getApplication();
+
         // start the LiveFeedManager
-        liveFeedManager = ((ApplicationWithStorage) getApplication()).liveFeedManager;
+        liveFeedManager = mCustomApplication.liveFeedManager;
     }
 
 
@@ -77,7 +82,6 @@ public class MainActivity extends ActionBarActivity {
         // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
