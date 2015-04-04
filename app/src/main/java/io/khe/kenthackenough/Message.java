@@ -8,53 +8,82 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.URLSpan;
+import android.util.Log;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
 class Message implements Comparable<Message> {
-    public Date created;
-    public String message;
+    private Date created;
+    private String message;
+    private SpannableString formatted;
     private static int nextNotificationID;
 
     public Message(Date created, String message) {
         this.created = created;
         this.message = message;
-    }
 
-    public String timeSince() {
-        Date now = new Date();
-        long deltaMills = now.getTime() - created.getTime();
-        long deltaSeconds = deltaMills / 1000;
-        long deltaMinutes = deltaSeconds / 60;
-        long deltaHours = deltaMinutes / 60;
-        long deltaDays = deltaHours / 24;
+        // create a formatted string from the html and strip bad links
+        formatted = new SpannableString(Html.fromHtml(message));
+        URLSpan[] links = formatted.getSpans(0,formatted.length(), URLSpan.class);
+        for (URLSpan link : links) {
 
-        String noun;
-        long value;
-
-        if (deltaDays > 0) {
-            noun = "day";
-            value = deltaDays;
-        } else if (deltaHours != 0) {
-            noun = "hour";
-            value = deltaHours;
-        } else if (deltaMinutes != 0) {
-            noun = "minute";
-            value = deltaMinutes;
-        } else if (deltaSeconds != 0) {
-            noun = "second";
-            value = deltaSeconds;
-        } else {
-            noun = "millisecond";
-            value = deltaMills;
-        }
-
-        if (value == 1) {
-            return "About a" + (noun.charAt(0) == 'h' ? "n " : " ") + noun + " ago";
-        } else {
-            return Long.toString(value) + " " + noun + "s ago";
+            // remove and re-add if it's valid
+            int start = formatted.getSpanStart(link);
+            int end = formatted.getSpanEnd(link);
+            int flags = formatted.getSpanFlags(link);
+            formatted.removeSpan(link);
+            try {
+                URL url = new URL(link.getURL());
+                link = new URLSpan(url.toString());
+                formatted.setSpan(link, start, end, flags);
+            } catch (MalformedURLException e) {
+                try {
+                    // make an attempt to fix simple cases of missing http://
+                    URL url = new URL("http://" + link.getURL());
+                    link = new URLSpan(url.toString());
+                    formatted.setSpan(link, start, end, flags);
+                } catch (MalformedURLException e1) {
+                    Log.e("KHE2015", "Bad URL in " + message);
+                }
+            }
         }
     }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public Spanned getFormatted() {
+        SpannableString formatted = new SpannableString(Html.fromHtml(message));
+        URLSpan[] links = formatted.getSpans(0,formatted.length(), URLSpan.class);
+        for (URLSpan link : links) {
+
+            // remove and re-add if it's valid
+            int start = formatted.getSpanStart(link);
+            int end = formatted.getSpanEnd(link);
+            int flags = formatted.getSpanFlags(link);
+            formatted.removeSpan(link);
+            try {
+                URL url = new URL(link.getURL());
+                link = new URLSpan(url.toString());
+                formatted.setSpan(link, start, end, flags);
+            } catch (MalformedURLException e) {
+                Log.e("KHE2015", "Bad URL in " + message);
+            }
+        }
+        return formatted;
+    }
+
 
     @Override
     public int hashCode() {

@@ -6,7 +6,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 
@@ -105,10 +110,27 @@ public class LiveFeedFragment extends Fragment {
             TextView message = (TextView) view.findViewById(R.id.live_feed_message);
             FriendlyTimeSince timeSince = (FriendlyTimeSince) view.findViewById(R.id.live_feed_time);
 
-            message.setText(Html.fromHtml(m.message));
+            SpannableString formatted = new SpannableString(Html.fromHtml(m.getMessage()));
+            URLSpan[] links = formatted.getSpans(0,formatted.length(), URLSpan.class);
+            for (URLSpan link : links) {
+                // remove and re-add if it's valid
+                int start = formatted.getSpanStart(link);
+                int end = formatted.getSpanEnd(link);
+                int flags = formatted.getSpanFlags(link);
+                formatted.removeSpan(link);
+                try {
+                    // make one attempt to fix it
+                    URL url = new URL("http://" + link.getURL());
+                    link = new URLSpan(url.toString());
+                    formatted.setSpan(link, start, end, flags);
+                } catch (MalformedURLException e) {
+                    Log.e("KHE2015","Bad URL in " + m.getMessage());
+                }
+            }
+            message.setText(formatted);
             message.setMovementMethod(LinkMovementMethod.getInstance()); // this is needed to make links work
 
-            timeSince.setTime(m.created.getTime());
+            timeSince.setTime(m.getCreated().getTime());
 
             return view;
         }
