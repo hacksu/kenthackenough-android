@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="FriendlyTimeSince">
+        <attr name="time" format="integer" />
+    </declare-styleable>
+</resources>

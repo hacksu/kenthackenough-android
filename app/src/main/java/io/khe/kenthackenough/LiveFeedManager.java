@@ -75,7 +75,7 @@ public class LiveFeedManager {
     public void start() {
         timer.scheduleAtFixedRate(new TimerTask() {
             synchronized public void run() {
-                ApplicationWithStorage.queue.add(listMessages);
+                KHEApp.queue.add(listMessages);
             }
 
         }, 0, checkDelay);

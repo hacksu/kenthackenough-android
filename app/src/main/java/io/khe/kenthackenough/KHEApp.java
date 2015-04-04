@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by isaac on 4/3/15.
  */
-public class ApplicationWithStorage extends Application {
+public class KHEApp extends Application {
     public LiveFeedManager liveFeedManager;
     public static RequestQueue queue;
     public void onCreate() {

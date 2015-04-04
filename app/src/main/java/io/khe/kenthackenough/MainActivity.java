@@ -26,7 +26,7 @@ public class MainActivity extends ActionBarActivity {
     private DrawerLayout mViewDrawerLayout;
     private ListView mViewDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-    private ApplicationWithStorage mCustomApplication;
+    private KHEApp mCustomApplication;
 
     private int mCurrentView = 0;
 
@@ -62,7 +62,7 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        mCustomApplication = (ApplicationWithStorage) getApplication();
+        mCustomApplication = (KHEApp) getApplication();
 
         // start the LiveFeedManager
         liveFeedManager = mCustomApplication.liveFeedManager;

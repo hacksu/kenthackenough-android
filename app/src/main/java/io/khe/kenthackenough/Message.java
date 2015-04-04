@@ -81,12 +81,13 @@ class Message implements Comparable<Message> {
     public void notify(Context context) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.clover);
-        builder.setContentTitle("New update from KHE");
+        builder.setContentTitle("Update from KHE");
         builder.setContentText(Html.fromHtml(message));
         builder.setAutoCancel(true);
         builder.setCategory("CATEGORY_MESSAGE");
         builder.setPriority(1);
         builder.setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE);
+        builder.setWhen(created.getTime());
 
         Intent resultIntent = new Intent(context, MainActivity.class);
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

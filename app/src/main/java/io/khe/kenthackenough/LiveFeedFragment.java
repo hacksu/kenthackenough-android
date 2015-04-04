@@ -16,11 +16,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Timer;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Shows a list of messages from the hackathond
  */
 public class LiveFeedFragment extends Fragment {
     private LiveFeedManager liveFeedManager;
@@ -55,7 +54,7 @@ public class LiveFeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_live_feed, container, false);
         ListView messages = (ListView) view.findViewById(R.id.messages);
 
-        liveFeedManager = ((ApplicationWithStorage) getActivity().getApplication()).liveFeedManager;
+        liveFeedManager = ((KHEApp) getActivity().getApplication()).liveFeedManager;
         messages.setAdapter(new LiveFeedAdapter(getActivity(), liveFeedManager));
         return view;
     }
@@ -104,12 +103,12 @@ public class LiveFeedFragment extends Fragment {
 
             Message m = messages.get(position); // reverse the direction
             TextView message = (TextView) view.findViewById(R.id.live_feed_message);
-            TextView timeSince = (TextView) view.findViewById(R.id.live_feed_time);
+            FriendlyTimeSince timeSince = (FriendlyTimeSince) view.findViewById(R.id.live_feed_time);
 
             message.setText(Html.fromHtml(m.message));
             message.setMovementMethod(LinkMovementMethod.getInstance()); // this is needed to make links work
 
-            timeSince.setText(m.timeSince());
+            timeSince.setTime(m.created.getTime());
 
             return view;
         }
