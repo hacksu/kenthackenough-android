@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,9 +58,10 @@ public class MessageRequest extends Request<List<Message>> {
             Log.e("KHE2015","failed to parse response from " + getUrl(), e);
             return Response.error(new VolleyError(netResponse));
         } catch (UnsupportedEncodingException e) {
-            Log.e("KHE2015","failed to parse response from " + getUrl(), e);
+            Log.e("KHE2015", "failed to parse response from " + getUrl(), e);
             return Response.error(new VolleyError(netResponse));
         }
+        Collections.sort(messages);
         return Response.success(messages, HttpHeaderParser.parseCacheHeaders(netResponse));
     }
 

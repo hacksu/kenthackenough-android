@@ -5,11 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.text.Html;
-import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
-import android.text.style.URLSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +14,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import io.khe.kenthackenough.backend.LiveFeedManager;
@@ -32,20 +26,20 @@ import io.khe.kenthackenough.backend.Message;
 public class LiveFeedFragment extends Fragment {
     private LiveFeedManager liveFeedManager;
     public static boolean mActive = false;
+    NotificationManager notificationManager;
     public LiveFeedFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
+        notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        notificationManager.cancelAll();
         mActive = true;
     }
 
@@ -109,7 +103,7 @@ public class LiveFeedFragment extends Fragment {
                 view = inflater.inflate(R.layout.live_feed_item,null);
             }
 
-            Message m = messages.get(position); // reverse the direction
+            Message m = messages.get(position);
             TextView message = (TextView) view.findViewById(R.id.live_feed_message);
             FriendlyTimeSince timeSince = (FriendlyTimeSince) view.findViewById(R.id.live_feed_time);
 

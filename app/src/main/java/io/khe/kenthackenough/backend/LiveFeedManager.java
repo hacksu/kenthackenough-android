@@ -42,9 +42,6 @@ public class LiveFeedManager {
             @Override
             public void onResponse(List<Message> messagesFromServer) {
 
-                Collections.reverse(messagesFromServer); // this may be more efferent than having it reverse everything
-                Collections.sort(messagesFromServer);
-
                 long newestSaved = 0;
                 if (messages.size() > 0) {
                     newestSaved = messages.get(0).getCreated().getTime();
