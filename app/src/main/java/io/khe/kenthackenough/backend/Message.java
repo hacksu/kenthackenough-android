@@ -1,14 +1,12 @@
-package io.khe.kenthackenough;
+package io.khe.kenthackenough.backend;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.URLSpan;
@@ -18,7 +16,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
-class Message implements Comparable<Message> {
+import io.khe.kenthackenough.MainActivity;
+import io.khe.kenthackenough.R;
+
+public class Message implements Comparable<Message> {
     private Date created;
     private String message;
     private SpannableString formatted;
@@ -49,7 +50,7 @@ class Message implements Comparable<Message> {
                     link = new URLSpan(url.toString());
                     formatted.setSpan(link, start, end, flags);
                 } catch (MalformedURLException e1) {
-                    Log.e("KHE2015", "Bad URL in " + message);
+                    Log.e("KHE2015", "Bad URL: " +link.getURL()+ " in " + message);
                 }
             }
         }
@@ -64,23 +65,6 @@ class Message implements Comparable<Message> {
     }
 
     public Spanned getFormatted() {
-        SpannableString formatted = new SpannableString(Html.fromHtml(message));
-        URLSpan[] links = formatted.getSpans(0,formatted.length(), URLSpan.class);
-        for (URLSpan link : links) {
-
-            // remove and re-add if it's valid
-            int start = formatted.getSpanStart(link);
-            int end = formatted.getSpanEnd(link);
-            int flags = formatted.getSpanFlags(link);
-            formatted.removeSpan(link);
-            try {
-                URL url = new URL(link.getURL());
-                link = new URLSpan(url.toString());
-                formatted.setSpan(link, start, end, flags);
-            } catch (MalformedURLException e) {
-                Log.e("KHE2015", "Bad URL in " + message);
-            }
-        }
         return formatted;
     }
 

@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import io.khe.kenthackenough.backend.LiveFeedManager;
 
 
 public class MainActivity extends ActionBarActivity {

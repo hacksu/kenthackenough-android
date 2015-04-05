@@ -1,4 +1,4 @@
-package io.khe.kenthackenough;
+package io.khe.kenthackenough.backend;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -14,9 +14,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import io.khe.kenthackenough.KHEApp;
+import io.khe.kenthackenough.backend.Message;
 
 /**
  * Class to manager messages sent to participants and staff through the api.
@@ -34,38 +38,38 @@ public class LiveFeedManager {
      * @param checkDelay The time between requests to the server
      */
     public LiveFeedManager(String url, int checkDelay) {
-        listMessages = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        listMessages = new MessageRequest(Request.Method.GET, url, null, new Response.Listener<List<Message>>() {
             @Override
-            public void onResponse(JSONObject response) {
-                List<Message> newMessages = new LinkedList<>();
-                try {
-                    JSONArray JsonMessages = response.getJSONArray("messages");
-                    for (int i = JsonMessages.length()-1; i>=0; --i) {
-                        JSONObject message = JsonMessages.getJSONObject(i);
+            public void onResponse(List<Message> messagesFromServer) {
 
-                        String htmlMessage = Processor.process(message.getString("text"));
-                        Message m = new Message(new DateTime(message.getString("created")).toDate(), htmlMessage);
+                Collections.reverse(messagesFromServer); // this may be more efferent than having it reverse everything
+                Collections.sort(messagesFromServer);
 
-                        // check if the message has already been added
-                        if (!messages.contains(m)) {
-                            messages.add(m);
-                            newMessages.add(m);
-                        }
+                long newestSaved = 0;
+                if (messages.size() > 0) {
+                    newestSaved = messages.get(0).getCreated().getTime();
+                }
+                List<Message> newMessages = new LinkedList<Message>();
+
+                for (Message message: messagesFromServer) {
+                    if (message.getCreated().getTime() > newestSaved) {
+                        newMessages.add(message);
+                    } else {
+                        break; // because the list is sorted after the first new message there are no more
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
                 }
 
-                Collections.sort(messages);
-                Collections.sort(newMessages);
+                messages = messagesFromServer;
+
 
                 for (NewMessagesListener listener : listeners) {
                     listener.newMessagesAdded(newMessages, messages);
                 }
-                System.out.println(messages.size());
+                System.out.println("found " + newMessages.size() + " new messages");
 
             }
-        }, null);
+        });
         this.checkDelay = checkDelay;
     }
 
