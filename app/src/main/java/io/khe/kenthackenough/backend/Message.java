@@ -30,14 +30,16 @@ public class Message implements Comparable<Message> {
     private String message;
     private SpannableString formatted;
     private static int nextNotificationID;
+    private long[] id;
 
-    public Message(Date created, String message) {
+    public Message(Date created, String message, long[] id) {
         this.created = created;
         this.message = message;
 
         // create a formatted string from the html and strip bad links
         formatted = new SpannableString(Html.fromHtml(message));
         URLSpan[] links = formatted.getSpans(0,formatted.length(), URLSpan.class);
+        this.id = id;
         for (URLSpan link : links) {
 
             // remove and re-add if it's valid
@@ -64,7 +66,11 @@ public class Message implements Comparable<Message> {
 
     public static Message getFromJSON(JSONObject json) throws JSONException {
         String htmlMessage = Processor.process(json.getString("text"));
-        return new Message(new DateTime(json.getString("created")).toDate(), htmlMessage);
+        String uuidString = json.getString("_id");
+        long[] id = new long[2];
+        id[0] = Long.decode('#' + uuidString.substring(0, 12));
+        id[1] = Long.decode('#' + uuidString.substring(12));
+        return new Message(new DateTime(json.getString("created")).toDate(), htmlMessage, id);
     }
 
     public Date getCreated() {
@@ -82,7 +88,7 @@ public class Message implements Comparable<Message> {
 
     @Override
     public int hashCode() {
-        return message.hashCode() ^ created.hashCode(); //not sure if this is best
+        return (int) id[1]; // todo better hash
     }
 
 
@@ -93,7 +99,7 @@ public class Message implements Comparable<Message> {
         }
 
         Message otherMessage = (Message) other;
-        return this.message.equals(otherMessage.message) && this.created.equals(otherMessage.created);
+        return this.id[0] == otherMessage.id[0] && this.id[1] == otherMessage.id[1];
 
     }
 

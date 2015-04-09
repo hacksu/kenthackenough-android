@@ -1,6 +1,5 @@
 package io.khe.kenthackenough.backend;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -30,7 +29,7 @@ import io.khe.kenthackenough.KHEApp;
  */
 public class LiveFeedManager {
     private Request listMessages;
-    public List<Message> messages = new LinkedList<>();
+    public volatile List<Message> messages = new LinkedList<>();
     private Timer timer = new Timer();
     private Set<NewMessagesListener> listeners = new HashSet<>();
     private int checkDelay;
@@ -82,12 +81,7 @@ public class LiveFeedManager {
         } catch (URISyntaxException e) {
             Log.e("KHE 2015", "API url " + url + " failed");
         }
-    }
 
-    /**
-     * Starts a repeated request to the server to fetch all messages
-     */
-    public void start() {
         socket.on("create", new Emitter.Listener() {
 
             @Override
@@ -113,6 +107,38 @@ public class LiveFeedManager {
 
             }
         });
+
+        socket.on("delete", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject json = (JSONObject) args[0];
+                try {
+                    String uuidString = json.getString("_id");
+                    final long[] id = new long[2];
+                    id[0] = Long.decode('#' + uuidString.substring(0, 12));
+                    id[1] = Long.decode('#' + uuidString.substring(12));
+
+                    uiThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            messages.remove(new Message(null, "", id));
+                            for (NewMessagesListener listener : listeners) {
+                                listener.newMessagesAdded(new ArrayList<Message>(), messages);
+                            }
+                        }
+                    });
+
+                } catch (JSONException e) {
+                    Log.e("KHE2015", "failed to parse create for message", e);
+                }
+            }
+        });
+    }
+
+    /**
+     * Starts a repeated request to the server to fetch all messages
+     */
+    public void start() {
         socket.connect();
 
         timer.scheduleAtFixedRate(new TimerTask() {
