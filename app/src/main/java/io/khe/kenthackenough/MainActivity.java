@@ -16,7 +16,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.List;
+
 import io.khe.kenthackenough.backend.LiveFeedManager;
+import io.khe.kenthackenough.backend.Message;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -34,6 +37,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mCustomApplication = (KHEApp) getApplication();
 
         if (savedInstanceState != null) {
             mCurrentView = savedInstanceState.getInt("active_view");
@@ -62,8 +67,6 @@ public class MainActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-        mCustomApplication = (KHEApp) getApplication();
 
         // start the LiveFeedManager
         liveFeedManager = mCustomApplication.liveFeedManager;

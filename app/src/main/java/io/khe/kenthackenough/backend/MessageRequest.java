@@ -48,11 +48,7 @@ public class MessageRequest extends Request<List<Message>> {
             JSONArray JsonMessages = response.getJSONArray("messages");
             for (int i = JsonMessages.length()-1; i>=0; --i) {
                 JSONObject message = JsonMessages.getJSONObject(i);
-
-                String htmlMessage = Processor.process(message.getString("text"));
-                Message m = new Message(new DateTime(message.getString("created")).toDate(), htmlMessage);
-                messages.add(m);
-
+                messages.add(Message.getFromJSON(message));
             }
         } catch (JSONException e) {
             Log.e("KHE2015","failed to parse response from " + getUrl(), e);

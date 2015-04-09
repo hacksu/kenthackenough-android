@@ -25,4 +25,5 @@ dependencies {
     compile 'com.android.support:cardview-v7:21.0.0'
     compile 'com.github.rjeschke:txtmark:0.13'
     compile 'joda-time:joda-time:2.7'
+    compile 'com.github.nkzawa:socket.io-client:0.3.0'
 }
