@@ -20,7 +20,11 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.khe.kenthackenough.MainActivity;
 import io.khe.kenthackenough.R;
@@ -30,9 +34,11 @@ public class Message implements Comparable<Message> {
     private String message;
     private SpannableString formatted;
     private static int nextNotificationID;
-    private long[] id;
+    private Long[] id;
+    private int notificationId = -1;
+    private static Map<List<Long>, Message> idToMessage = new HashMap<>();
 
-    public Message(Date created, String message, long[] id) {
+    public Message(Date created, String message, Long[] id) {
         this.created = created;
         this.message = message;
 
@@ -40,6 +46,8 @@ public class Message implements Comparable<Message> {
         formatted = new SpannableString(Html.fromHtml(message));
         URLSpan[] links = formatted.getSpans(0,formatted.length(), URLSpan.class);
         this.id = id;
+        idToMessage.put(Arrays.asList(id), this);
+
         for (URLSpan link : links) {
 
             // remove and re-add if it's valid
@@ -67,10 +75,14 @@ public class Message implements Comparable<Message> {
     public static Message getFromJSON(JSONObject json) throws JSONException {
         String htmlMessage = Processor.process(json.getString("text"));
         String uuidString = json.getString("_id");
-        long[] id = new long[2];
+        Long[] id = new Long[2];
         id[0] = Long.decode('#' + uuidString.substring(0, 12));
         id[1] = Long.decode('#' + uuidString.substring(12));
         return new Message(new DateTime(json.getString("created")).toDate(), htmlMessage, id);
+    }
+
+    public static Message getByID(Long[] id) {
+        return idToMessage.get(Arrays.asList(id));
     }
 
     public Date getCreated() {
@@ -88,7 +100,7 @@ public class Message implements Comparable<Message> {
 
     @Override
     public int hashCode() {
-        return (int) id[1]; // todo better hash
+        return id[1].intValue(); // todo better hash
     }
 
 
@@ -99,7 +111,7 @@ public class Message implements Comparable<Message> {
         }
 
         Message otherMessage = (Message) other;
-        return this.id[0] == otherMessage.id[0] && this.id[1] == otherMessage.id[1];
+        return this.id[0].equals(otherMessage.id[0]) && this.id[1].equals(otherMessage.id[1]);
 
     }
 
@@ -131,7 +143,21 @@ public class Message implements Comparable<Message> {
 
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify("messages", nextNotificationID++, builder.build());
+
+        notificationId = nextNotificationID++;
+        notificationManager.notify("messages", notificationId, builder.build());
+    }
+
+    public void closeNotification(Context context) {
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.cancel("messages" , notificationId);
+        System.out.println("was found for id:" +idToMessage.get(Arrays.asList(id)).message);
+
+
+
+        notificationId = -1;
     }
 
 
