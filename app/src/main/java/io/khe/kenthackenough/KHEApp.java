@@ -13,7 +13,8 @@ import io.khe.kenthackenough.backend.LiveFeedManager;
 import io.khe.kenthackenough.backend.Message;
 
 /**
- * Created by isaac on 4/3/15.
+ * Custom application to store data and service that must be shared between activities and persist
+ * through the application's life cycle
  */
 public class KHEApp extends Application {
     public LiveFeedManager liveFeedManager;
@@ -24,6 +25,22 @@ public class KHEApp extends Application {
         super.onCreate();
         queue = Volley.newRequestQueue(this);
         // start the LiveFeedManager
+        liveFeedManager = new LiveFeedManager(Config.API_URL + "/messages", 100000, this);
+        liveFeedManager.addListener(new LiveFeedManager.NewMessagesListener() {
+            boolean first = true;
+            @Override
+            public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
+                if (!LiveFeedFragment.mActive && !first){
+                    for (Message message : newMessages) {
+                        message.notify(getApplicationContext());
+                    }
+                }
+                first = false;
+            }
+        });
+        liveFeedManager.start();
+
+
         eventsManager = new EventsManager(Config.API_URL + "/events", 120000);
         eventsManager.start();
 

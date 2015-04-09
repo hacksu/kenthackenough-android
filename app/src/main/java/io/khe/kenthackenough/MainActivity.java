@@ -39,7 +39,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         mCustomApplication = (KHEApp) getApplication();
-        mCustomApplication.liveFeedManager = new LiveFeedManager(Config.API_URL + "/messages", 100000, this);
 
         if (savedInstanceState != null) {
             mCurrentView = savedInstanceState.getInt("active_view");
@@ -71,19 +70,6 @@ public class MainActivity extends ActionBarActivity {
 
         // start the LiveFeedManager
         liveFeedManager = mCustomApplication.liveFeedManager;
-        liveFeedManager.start();
-        liveFeedManager.addListener(new LiveFeedManager.NewMessagesListener() {
-            boolean first = true;
-            @Override
-            public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
-                if (!LiveFeedFragment.mActive && !first){
-                    for (Message message : newMessages) {
-                        message.notify(getApplicationContext());
-                    }
-                }
-                first = false;
-            }
-        });
     }
 
 

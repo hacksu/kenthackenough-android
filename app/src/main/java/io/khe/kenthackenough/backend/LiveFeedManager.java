@@ -2,6 +2,7 @@ package io.khe.kenthackenough.backend;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -33,9 +34,9 @@ public class LiveFeedManager {
     private Timer timer = new Timer();
     private Set<NewMessagesListener> listeners = new HashSet<>();
     private int checkDelay;
+    private Handler uiThreadHandler;
 
     private Socket socket;
-    private Activity activity;
 
 
     /**
@@ -43,7 +44,7 @@ public class LiveFeedManager {
      * @param url The url for the api including the protocol
      * @param checkDelay The time between requests to the server
      */
-    public LiveFeedManager(String url, int checkDelay, Activity activity) {
+    public LiveFeedManager(String url, int checkDelay, Context context) {
         listMessages = new MessageRequest(Request.Method.GET, url, null, new Response.Listener<List<Message>>() {
             @Override
             public void onResponse(List<Message> messagesFromServer) {
@@ -74,7 +75,7 @@ public class LiveFeedManager {
             }
         });
         this.checkDelay = checkDelay;
-        this.activity = activity;
+        uiThreadHandler = new Handler(context.getMainLooper());
 
         try {
             socket = IO.socket(url);
@@ -94,11 +95,12 @@ public class LiveFeedManager {
                 JSONObject json = (JSONObject) args[0];
                 try {
                     final Message newMessage = Message.getFromJSON(json);
-                    activity.runOnUiThread(new Runnable() {
+                    uiThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            messages.add(newMessage);
-                            List<Message> newMessages = new  ArrayList(1);
+                            messages.add(0, newMessage);
+                            List<Message> newMessages = new  ArrayList<Message>(1);
+
                             newMessages.add(newMessage);
                             for (NewMessagesListener listener : listeners) {
                                 listener.newMessagesAdded(newMessages, messages);
