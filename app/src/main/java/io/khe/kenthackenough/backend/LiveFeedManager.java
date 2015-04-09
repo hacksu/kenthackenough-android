@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,7 +103,7 @@ public class LiveFeedManager {
                         }
                     });
                 } catch (JSONException e) {
-                    Log.e("KHE2015", "failed to parse create for message", e);
+                    Log.e("KHE2015", "failed to parse create message", e);
                 }
 
             }
@@ -129,12 +130,35 @@ public class LiveFeedManager {
                     });
 
                 } catch (JSONException e) {
-                    Log.e("KHE2015", "failed to parse create for message", e);
+                    Log.e("KHE2015", "failed to parse delete message", e);
+                }
+            }
+        });
+
+        socket.on("update", new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                try {
+                    final Message newMessage = Message.getFromJSON((JSONObject) args[0]);
+                    uiThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            messages.remove(newMessage);
+                            messages.add(newMessage);
+                            Collections.sort(messages);
+
+                            for (NewMessagesListener listener : listeners) {
+                                listener.newMessagesAdded(new ArrayList<Message>(), messages);
+                            }
+                        }
+                    });
+                } catch (JSONException e) {
+                    Log.e("KHE2015", "failed to parse update message", e);
                 }
             }
         });
     }
-
     /**
      * Starts a repeated request to the server to fetch all messages
      */
