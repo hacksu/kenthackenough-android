@@ -16,7 +16,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.List;
+
 import io.khe.kenthackenough.backend.LiveFeedManager;
+import io.khe.kenthackenough.backend.Message;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -34,6 +37,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mCustomApplication = (KHEApp) getApplication();
+        mCustomApplication.liveFeedManager = new LiveFeedManager(Config.API_URL + "/messages", 100000, this);
 
         if (savedInstanceState != null) {
             mCurrentView = savedInstanceState.getInt("active_view");
@@ -63,10 +69,21 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        mCustomApplication = (KHEApp) getApplication();
-
         // start the LiveFeedManager
         liveFeedManager = mCustomApplication.liveFeedManager;
+        liveFeedManager.start();
+        liveFeedManager.addListener(new LiveFeedManager.NewMessagesListener() {
+            boolean first = true;
+            @Override
+            public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
+                if (!LiveFeedFragment.mActive && !first){
+                    for (Message message : newMessages) {
+                        message.notify(getApplicationContext());
+                    }
+                }
+                first = false;
+            }
+        });
     }
 
 

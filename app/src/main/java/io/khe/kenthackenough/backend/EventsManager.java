@@ -1,8 +1,14 @@
 package io.khe.kenthackenough.backend;
 
+import android.util.Log;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +26,7 @@ public class EventsManager {
     public List<Event> events = new LinkedList<>();
     private Timer timer = new Timer();
     private Set<EventsUpdateListener> listeners = new HashSet<>();
+    private Socket socket;
     private int checkDelay;
 
     /**
@@ -40,6 +47,11 @@ public class EventsManager {
             }
         });
         this.checkDelay = checkDelay;
+        try {
+            socket = IO.socket(url);
+        } catch (URISyntaxException e) {
+            Log.e("KHE 2015", "API url " + url + " failed");
+        }
     }
 
     /**

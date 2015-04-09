@@ -1,26 +1,28 @@
 package io.khe.kenthackenough.backend;
 
+import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.github.rjeschke.txtmark.Processor;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
-import org.joda.time.DateTime;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collections;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import io.khe.kenthackenough.KHEApp;
-import io.khe.kenthackenough.backend.Message;
 
 /**
  * Class to manager messages sent to participants and staff through the api.
@@ -32,12 +34,16 @@ public class LiveFeedManager {
     private Set<NewMessagesListener> listeners = new HashSet<>();
     private int checkDelay;
 
+    private Socket socket;
+    private Activity activity;
+
+
     /**
      * Standard constructor for a LiveFeedManager (does not start it pulling)
      * @param url The url for the api including the protocol
      * @param checkDelay The time between requests to the server
      */
-    public LiveFeedManager(String url, int checkDelay) {
+    public LiveFeedManager(String url, int checkDelay, Activity activity) {
         listMessages = new MessageRequest(Request.Method.GET, url, null, new Response.Listener<List<Message>>() {
             @Override
             public void onResponse(List<Message> messagesFromServer) {
@@ -68,12 +74,45 @@ public class LiveFeedManager {
             }
         });
         this.checkDelay = checkDelay;
+        this.activity = activity;
+
+        try {
+            socket = IO.socket(url);
+        } catch (URISyntaxException e) {
+            Log.e("KHE 2015", "API url " + url + " failed");
+        }
     }
 
     /**
      * Starts a repeated request to the server to fetch all messages
      */
     public void start() {
+        socket.on("create", new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                JSONObject json = (JSONObject) args[0];
+                try {
+                    final Message newMessage = Message.getFromJSON(json);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            messages.add(newMessage);
+                            List<Message> newMessages = new  ArrayList(1);
+                            newMessages.add(newMessage);
+                            for (NewMessagesListener listener : listeners) {
+                                listener.newMessagesAdded(newMessages, messages);
+                            }
+                        }
+                    });
+                } catch (JSONException e) {
+                    Log.e("KHE2015", "failed to parse create for message", e);
+                }
+
+            }
+        });
+        socket.connect();
+
         timer.scheduleAtFixedRate(new TimerTask() {
             synchronized public void run() {
                 KHEApp.queue.add(listMessages);

@@ -12,6 +12,12 @@ import android.text.Spanned;
 import android.text.style.URLSpan;
 import android.util.Log;
 
+import com.github.rjeschke.txtmark.Processor;
+
+import org.joda.time.DateTime;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
@@ -54,6 +60,11 @@ public class Message implements Comparable<Message> {
                 }
             }
         }
+    }
+
+    public static Message getFromJSON(JSONObject json) throws JSONException {
+        String htmlMessage = Processor.process(json.getString("text"));
+        return new Message(new DateTime(json.getString("created")).toDate(), htmlMessage);
     }
 
     public Date getCreated() {
