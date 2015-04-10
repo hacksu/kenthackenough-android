@@ -1,14 +1,8 @@
 package io.khe.kenthackenough.backend;
 
-import android.util.Log;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 
-import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,8 +19,7 @@ public class EventsManager {
     private Request listEvents;
     public List<Event> events = new LinkedList<>();
     private Timer timer = new Timer();
-    private Set<EventsUpdateListener> listeners = new HashSet<>();
-    private Socket socket;
+    private Set<EventsUpdateListener> updateListeners = new HashSet<>();
     private int checkDelay;
 
     /**
@@ -40,18 +33,14 @@ public class EventsManager {
             public void onResponse(List<Event> eventsFromServer) {
                 events = eventsFromServer;
 
-                for (EventsUpdateListener listener : listeners) {
+                for (EventsUpdateListener listener : updateListeners) {
                     listener.eventsFetched(events);
                 }
 
             }
         });
+        listEvents.setTag("listMessages");
         this.checkDelay = checkDelay;
-        try {
-            socket = IO.socket(url);
-        } catch (URISyntaxException e) {
-            Log.e("KHE 2015", "API url " + url + " failed");
-        }
     }
 
     /**
@@ -71,6 +60,7 @@ public class EventsManager {
      */
     public void halt() {
         timer.purge();
+        KHEApp.queue.cancelAll("listMessages");
     }
 
     /**
@@ -79,7 +69,7 @@ public class EventsManager {
      * @param listener The listener to be added
      */
     public void addListener(EventsUpdateListener listener) {
-        listeners.add(listener);
+        updateListeners.add(listener);
     }
 
     public interface EventsUpdateListener {

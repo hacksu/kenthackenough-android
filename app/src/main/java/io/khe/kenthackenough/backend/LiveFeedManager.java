@@ -115,7 +115,7 @@ public class LiveFeedManager {
                 JSONObject json = (JSONObject) args[0];
                 try {
                     String uuidString = json.getString("_id");
-                    final long[] id = new long[2];
+                    final Long[] id = new Long[2];
                     id[0] = Long.decode('#' + uuidString.substring(0, 12));
                     id[1] = Long.decode('#' + uuidString.substring(12));
 

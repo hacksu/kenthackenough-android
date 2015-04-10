@@ -4,7 +4,6 @@ package io.khe.kenthackenough;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,6 @@ import java.util.List;
 
 import io.khe.kenthackenough.backend.Event;
 import io.khe.kenthackenough.backend.EventsManager;
-import io.khe.kenthackenough.backend.LiveFeedManager;
-import io.khe.kenthackenough.backend.Message;
 
 
 /**

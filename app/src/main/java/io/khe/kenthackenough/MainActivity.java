@@ -133,21 +133,4 @@ public class MainActivity extends ActionBarActivity {
             selectView(position);
         }
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class DashboardFragment extends Fragment {
-
-        public DashboardFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
-            return rootView;
-        }
-    }
-
 }

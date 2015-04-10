@@ -25,7 +25,7 @@ public class KHEApp extends Application {
         super.onCreate();
         queue = Volley.newRequestQueue(this);
         // start the LiveFeedManager
-        liveFeedManager = new LiveFeedManager(Config.API_URL + "/messages", 100000, this);
+        liveFeedManager = new LiveFeedManager(Config.API_URL + "/messages", 120000, this);
         liveFeedManager.addListener(new LiveFeedManager.NewMessagesListener() {
             boolean first = true;
             @Override

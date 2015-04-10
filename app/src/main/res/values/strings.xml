@@ -3,7 +3,6 @@
 
     <string name="app_name">KHE 2015</string>
     <string name="action_settings">Settings</string>
-
     <string name="api_url">api.khe.pdilyard.com</string>
     <string name="client">android</string>
 
@@ -12,4 +11,8 @@
         <item>Updates</item>
         <item>Calender</item>
     </string-array>
+
+    <string name="title_activity_dashboard_fragment">DashboardFragment</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>
