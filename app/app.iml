@@ -90,6 +90,7 @@
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="joda-time-2.7" level="project" />
+    <orderEntry type="library" exported="" name="recyclerview-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="engine.io-client-0.3.1" level="project" />
     <orderEntry type="library" exported="" name="txtmark-0.13" level="project" />
   </component>

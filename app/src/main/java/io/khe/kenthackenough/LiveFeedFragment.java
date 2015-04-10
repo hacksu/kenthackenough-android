@@ -5,6 +5,9 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,19 +57,21 @@ public class LiveFeedFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_live_feed, container, false);
-        ListView messages = (ListView) view.findViewById(R.id.messages);
+        RecyclerView messages = (RecyclerView) view.findViewById(R.id.messages);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        messages.setLayoutManager(llm);
 
         liveFeedManager = ((KHEApp) getActivity().getApplication()).liveFeedManager;
-        messages.setAdapter(new LiveFeedAdapter(getActivity(), liveFeedManager));
+        messages.setAdapter(new LiveFeedAdapter(liveFeedManager));
         return view;
     }
 
-    private class LiveFeedAdapter extends BaseAdapter implements ListAdapter {
+    private class LiveFeedAdapter extends RecyclerView.Adapter<MessageViewHolder> {
         private List<Message> messages;
-        private Context context;
 
 
-        public LiveFeedAdapter(Context context, LiveFeedManager manager) {
+        public LiveFeedAdapter( LiveFeedManager manager) {
             manager.addNewMessagesListener(new LiveFeedManager.NewMessagesListener() {
                 @Override
                 public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
@@ -89,45 +94,45 @@ public class LiveFeedFragment extends Fragment {
                 }
             });
             this.messages = manager.messages;
-            this.context = context;
             notifyDataSetChanged();
         }
 
         @Override
-        public int getCount() {
-            if (messages == null) return 0;
-            else return messages.size();
+        public MessageViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            View view = LayoutInflater.from(viewGroup.getContext()).
+                    inflate(R.layout.live_feed_item, viewGroup, false);
+            return new MessageViewHolder(view);
         }
 
         @Override
-        public Object getItem(int position) {
-            return messages.get(position);
+        public void onBindViewHolder(MessageViewHolder messageViewHolder, int i) {
+            Message m = messages.get(i);
+
+            messageViewHolder.message.setText(m.getFormatted());
+            messageViewHolder.timeSince.setTime(m.getCreated().getTime());
         }
 
         @Override
         public long getItemId(int position) {
-            return 0;
+            return position;
         }
 
         @Override
-        public View getView(int position, View view, ViewGroup parent) {
-            if (view == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                view = inflater.inflate(R.layout.live_feed_item,null);
-            }
-
-            Message m = messages.get(position);
-            TextView message = (TextView) view.findViewById(R.id.live_feed_message);
-            FriendlyTimeSince timeSince = (FriendlyTimeSince) view.findViewById(R.id.live_feed_time);
-
-            message.setText(m.getFormatted());
-            message.setMovementMethod(LinkMovementMethod.getInstance()); // this is needed to make links work
-
-            timeSince.setTime(m.getCreated().getTime());
-
-            return view;
+        public int getItemCount() {
+            return messages.size();
         }
+
     }
 
+    private class MessageViewHolder extends RecyclerView.ViewHolder {
+        protected TextView message;
+        protected FriendlyTimeSince timeSince;
 
+
+        public MessageViewHolder(View itemView) {
+            super(itemView);
+            message = (TextView) itemView.findViewById(R.id.live_feed_message);
+            timeSince = (FriendlyTimeSince) itemView.findViewById(R.id.live_feed_time);
+        }
+    }
 }
