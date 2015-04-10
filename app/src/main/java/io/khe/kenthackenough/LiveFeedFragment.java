@@ -67,11 +67,24 @@ public class LiveFeedFragment extends Fragment {
 
 
         public LiveFeedAdapter(Context context, LiveFeedManager manager) {
-            manager.addListener(new LiveFeedManager.NewMessagesListener() {
+            manager.addNewMessagesListener(new LiveFeedManager.NewMessagesListener() {
                 @Override
                 public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
                     messages = allMessages;
-                    System.out.println(messages.size());
+                    notifyDataSetChanged();
+                }
+            });
+            manager.addDeleteMessageListener(new LiveFeedManager.DeletedMessageListener() {
+                @Override
+                public void messageDeleted(Message deleted, List<Message> allMessages) {
+                    messages = allMessages;
+                    notifyDataSetChanged();
+                }
+            });
+            manager.addUpdateMessageListener(new LiveFeedManager.UpdatedMessageListener() {
+                @Override
+                public void messageUpdated(Message updated, List<Message> allMessages) {
+                    messages = allMessages;
                     notifyDataSetChanged();
                 }
             });

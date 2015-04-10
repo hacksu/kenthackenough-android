@@ -32,7 +32,9 @@ public class LiveFeedManager {
     private Request listMessages;
     public volatile List<Message> messages = new LinkedList<>();
     private Timer timer = new Timer();
-    private Set<NewMessagesListener> listeners = new HashSet<>();
+    private Set<NewMessagesListener> newMessagesListeners = new HashSet<>();
+    private Set<UpdatedMessageListener> updatedMessageListeners = new HashSet<>();
+    private Set<DeletedMessageListener> deletedMessageListeners = new HashSet<>();
     private int checkDelay;
     private Handler uiThreadHandler;
 
@@ -44,7 +46,7 @@ public class LiveFeedManager {
      * @param url The url for the api including the protocol
      * @param checkDelay The time between requests to the server
      */
-    public LiveFeedManager(String url, int checkDelay, Context context) {
+    public LiveFeedManager(String url, int checkDelay, final Context context) {
         listMessages = new MessageRequest(Request.Method.GET, url, null, new Response.Listener<List<Message>>() {
             @Override
             public void onResponse(List<Message> messagesFromServer) {
@@ -67,13 +69,14 @@ public class LiveFeedManager {
                 messages = messagesFromServer;
 
 
-                for (NewMessagesListener listener : listeners) {
+                for (NewMessagesListener listener : newMessagesListeners) {
                     listener.newMessagesAdded(newMessages, messages);
                 }
                 System.out.println("found " + newMessages.size() + " new messages");
 
             }
         });
+        listMessages.setTag("listMessages");
         this.checkDelay = checkDelay;
         uiThreadHandler = new Handler(context.getMainLooper());
 
@@ -97,7 +100,7 @@ public class LiveFeedManager {
                             List<Message> newMessages = new  ArrayList<Message>(1);
 
                             newMessages.add(newMessage);
-                            for (NewMessagesListener listener : listeners) {
+                            for (NewMessagesListener listener : newMessagesListeners) {
                                 listener.newMessagesAdded(newMessages, messages);
                             }
                         }
@@ -122,9 +125,10 @@ public class LiveFeedManager {
                     uiThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
+                            Message.getByID(id).closeNotification(context);
                             messages.remove(new Message(null, "", id));
-                            for (NewMessagesListener listener : listeners) {
-                                listener.newMessagesAdded(new ArrayList<Message>(), messages);
+                            for (DeletedMessageListener listener : deletedMessageListeners) {
+                                listener.messageDeleted(Message.getByID(id), messages);
                             }
                         }
                     });
@@ -148,8 +152,8 @@ public class LiveFeedManager {
                             messages.add(newMessage);
                             Collections.sort(messages);
 
-                            for (NewMessagesListener listener : listeners) {
-                                listener.newMessagesAdded(new ArrayList<Message>(), messages);
+                            for (UpdatedMessageListener listener : updatedMessageListeners) {
+                                listener.messageUpdated(newMessage, messages);
                             }
                         }
                     });
@@ -178,15 +182,38 @@ public class LiveFeedManager {
      */
     public void halt() {
         timer.purge();
+        KHEApp.queue.cancelAll("listMessages");
     }
 
     /**
-     * Adds a listener
+     * Adds a NewMessagesListener
      *
      * @param listener The listener to be added
      */
-    public void addListener(NewMessagesListener listener) {
-        listeners.add(listener);
+    public void addNewMessagesListener(NewMessagesListener listener) {
+        newMessagesListeners.add(listener);
+    }
+
+    public boolean removeNewMessagesLister(NewMessagesListener listener) {
+        return newMessagesListeners.remove(listener);
+    }
+
+
+    public void addDeleteMessageListener(DeletedMessageListener listener) {
+        deletedMessageListeners.add(listener);
+    }
+
+    public boolean removeDeleteMessageListener(DeletedMessageListener listener) {
+        return deletedMessageListeners.remove(listener);
+    }
+
+
+    public void addUpdateMessageListener(UpdatedMessageListener listener) {
+        updatedMessageListeners.add(listener);
+    }
+
+    public boolean removeUpdatedMessageListener(UpdatedMessageListener listener) {
+        return updatedMessageListeners.remove(listener);
     }
 
     public interface NewMessagesListener {
@@ -197,5 +224,25 @@ public class LiveFeedManager {
          * @param allMessages a list of all messages ordered by time sent with the newest first
          */
         void newMessagesAdded(List<Message> newMessages, List<Message> allMessages);
+    }
+
+    public interface DeletedMessageListener {
+        /**
+         * Called when messages are deleted via socket.io.
+         *
+         * @param deletedMessage the message that was deleted
+         * @param allMessages a list of all messages ordered by time sent with the newest first
+         */
+        void messageDeleted(Message deletedMessage, List<Message> allMessages);
+    }
+
+    public interface UpdatedMessageListener {
+        /**
+         * Called when an message is edited via socket.io
+         *
+         * @param updatedMessage the message that was edited
+         * @param allMessages a list of all messages ordered by time sent with the newest first
+         */
+        void messageUpdated(Message updatedMessage, List<Message> allMessages);
     }
 }

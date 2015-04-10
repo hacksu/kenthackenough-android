@@ -26,16 +26,24 @@ public class KHEApp extends Application {
         queue = Volley.newRequestQueue(this);
         // start the LiveFeedManager
         liveFeedManager = new LiveFeedManager(Config.API_URL + "/messages", 120000, this);
-        liveFeedManager.addListener(new LiveFeedManager.NewMessagesListener() {
+        liveFeedManager.addNewMessagesListener(new LiveFeedManager.NewMessagesListener() {
             boolean first = true;
+
             @Override
             public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
-                if (!LiveFeedFragment.mActive && !first){
+                if (!LiveFeedFragment.mActive && !first) {
                     for (Message message : newMessages) {
                         message.notify(getApplicationContext());
                     }
                 }
                 first = false;
+            }
+        });
+
+        liveFeedManager.addDeleteMessageListener(new LiveFeedManager.DeletedMessageListener() {
+            @Override
+            public void messageDeleted(Message deletedMessage, List<Message> allMessages) {
+                deletedMessage.closeNotification(getApplicationContext());
             }
         });
         liveFeedManager.start();
