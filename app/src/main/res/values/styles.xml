@@ -1,11 +1,10 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/main_black</item>
         <item name="colorPrimaryDark">@color/main_red</item>
         <item name="colorAccent">@color/accent_pink</item>
-        <item name="android:background">@color/main_white</item>
         <item name="android:actionBarStyle">@style/MyActionBarStyle</item> -->
     </style>
 

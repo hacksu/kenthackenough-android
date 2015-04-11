@@ -7,19 +7,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.view.LayoutInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.util.List;
-
 import io.khe.kenthackenough.backend.LiveFeedManager;
-import io.khe.kenthackenough.backend.Message;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -44,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
             mCurrentView = savedInstanceState.getInt("active_view");
         }
 
-        setContentView(R.layout.activity_dashboard);
+        setContentView(R.layout.activity_main);
         mViews[0] = new DashboardFragment();
         mViews[1] = new LiveFeedFragment();
         mViews[2] = new EventsFragment();
@@ -55,6 +51,9 @@ public class MainActivity extends ActionBarActivity {
 
         mViewDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.text_list_item, mViewTitles));
         mViewDrawerList.setOnItemClickListener(new ViewDrawerClickListener());
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
         mCurrentView = intent.getIntExtra("view", mCurrentView);
