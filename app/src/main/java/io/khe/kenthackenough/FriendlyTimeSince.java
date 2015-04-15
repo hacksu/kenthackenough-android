@@ -82,34 +82,34 @@ public class FriendlyTimeSince extends TextView {
     }
 
     private String getFriendlyTimeSince() {
-        long deltaMills = System.currentTimeMillis() - time;
-        long deltaSeconds = deltaMills / 1000;
-        long deltaMinutes = deltaSeconds / 60;
-        long deltaHours = deltaMinutes / 60;
-        long deltaDays = deltaHours / 24;
+        double deltaMills = System.currentTimeMillis() - time;
+        double deltaSeconds = deltaMills / 1000;
+        double deltaMinutes = deltaSeconds / 60;
+        double deltaHours = deltaMinutes / 60;
+        double deltaDays = deltaHours / 24;
 
         String noun;
         long value;
 
-        if (deltaDays > 0) {
-            noun = "day";
-            value = deltaDays;
-        } else if (deltaHours > 0) {
-            noun = "hour";
-            value = deltaHours;
-        } else if (deltaMinutes > 0) {
-            noun = "minute";
-            value = deltaMinutes;
-        } else if (deltaSeconds > 0) {
-            noun = "second";
-            value = deltaSeconds;
+        if (deltaDays > 0.5) {
+            noun = "a day";
+            value = (long)(deltaDays + 0.5);
+        } else if (deltaHours > 1) {
+            noun = "an hour";
+            value = (long)(deltaHours + 0.5);
+        } else if (deltaMinutes > 0.5) {
+            noun = "a minute";
+            value = (long)(deltaMinutes + 0.5);
+        } else if (deltaSeconds > 0.5) {
+            noun = "a second";
+            value = (long)(deltaSeconds+ 0.5);
         } else {
-            noun = "second";
+            noun = "a second";
             value = 1;
         }
 
         if (value == 1) {
-            return "About a" + (noun.charAt(0) == 'h' ? "n " : " ") + noun + " ago";
+            return "About " + noun + " ago";
         } else {
             return Long.toString(value) + " " + noun + "s ago";
         }
