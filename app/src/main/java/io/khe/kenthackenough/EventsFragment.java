@@ -9,11 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import io.khe.kenthackenough.backend.Event;
@@ -27,6 +29,10 @@ public class EventsFragment extends Fragment {
 
 
     private EventsManager eventsManager;
+    private static String[] dayStringLookUp = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday",
+            "Thursday", "Friday", "Saturday"};
+    private static String[] monthStringLookUp = new String[]{"January", "February", "March", "April",
+            "May", "June", "July", "August", "September", "October", "November", "December"};
 
     public EventsFragment() {
         // Required empty public constructor
@@ -53,7 +59,6 @@ public class EventsFragment extends Fragment {
 
     private class EventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
         private List<Event> events;
-        private Context context;
         private EventsAdapter self = this;
 
 
@@ -66,9 +71,9 @@ public class EventsFragment extends Fragment {
                 }
             });
             this.events = manager.events;
-            this.context = context;
             notifyDataSetChanged();
         }
+
 
         @Override
         public EventViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -81,11 +86,15 @@ public class EventsFragment extends Fragment {
         public void onBindViewHolder(EventViewHolder eventViewHolder, int i) {
             Event e = events.get(i);
 
-            eventViewHolder.description.setText(e.getDescription());
-            eventViewHolder.title.setText(e.getTitle());
-            eventViewHolder.start.setText(e.getStart().toString());
-            eventViewHolder.end.setText(e.getFinish().toString());
+            if (i == 0 || events.get(i-1).getStart().get(Calendar.DAY_OF_YEAR) != e.getStart().get(Calendar.DAY_OF_YEAR)) {
+                eventViewHolder.createDayHeader(e.getStart().getTime());
+            }
 
+            eventViewHolder.setFromEvent(e);
+        }
+        @Override
+        public void onViewRecycled(EventViewHolder viewHolder) {
+            viewHolder.removeDayHeader();
         }
 
         @Override
@@ -100,17 +109,51 @@ public class EventsFragment extends Fragment {
     }
 
     private class EventViewHolder extends RecyclerView.ViewHolder {
-        protected TextView title;
-        protected TextView start;
-        protected TextView end;
-        protected TextView description;
+        private TextView title;
+        private TextView times;
+        private TextView description;
+
+        private TextView week_day;
+        private TextView date;
+
+        private RelativeLayout header;
+        private LinearLayout mainView;
 
         public EventViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.event_title);
-            start = (TextView) itemView.findViewById(R.id.event_start);
-            end = (TextView) itemView.findViewById(R.id.event_end);
+            times = (TextView) itemView.findViewById(R.id.event_times);
             description = (TextView) itemView.findViewById(R.id.event_description);
+            this.mainView = (LinearLayout) itemView;
+        }
+
+        /**
+         * Sets the view to match the information in event
+         * @param event the event to match
+         */
+        public void setFromEvent(Event event) {
+            title.setText(event.getTitle());
+            times.setText(event.getStart().get(Calendar.HOUR) + " " + (event.getStart().get(Calendar.AM_PM) == 0?"AM":"PM")
+            + " - " + event.getEnd().get(Calendar.HOUR) + " " + (event.getEnd().get(Calendar.AM_PM) == 0?"AM":"PM"));
+            description.setText(event.getDescription());
+        }
+
+        public void createDayHeader(Date date) {
+            this.header = (RelativeLayout) LayoutInflater.from(mainView.getContext()).
+                    inflate(R.layout.day_header, mainView, false);
+
+            week_day = (TextView) header.findViewById(R.id.day_of_week);
+            this.date = (TextView) header.findViewById(R.id.date);
+
+            mainView.addView(header, 0);
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(date);
+
+            this.week_day.setText(dayStringLookUp[cal.get(Calendar.DAY_OF_WEEK)]);
+            this.date.setText(monthStringLookUp[cal.get(Calendar.MONTH)] + " " + cal.get(Calendar.DAY_OF_MONTH));
+        }
+        public void removeDayHeader() {
+            mainView.removeView(header);
         }
     }
 

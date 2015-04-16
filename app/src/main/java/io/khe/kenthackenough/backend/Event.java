@@ -1,17 +1,17 @@
 package io.khe.kenthackenough.backend;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.view.View;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  *
  */
 public class Event implements Comparable<Event>{
-    private Date start;
-    private Date finish;
+    private Calendar startCal = new GregorianCalendar();
+    private Calendar endCal = new GregorianCalendar();
     private String description;
     private String title;
     private String group;
@@ -22,8 +22,8 @@ public class Event implements Comparable<Event>{
     private Color color;
 
     public Event(Date start, Date end, String group, String title, String description) {
-        this.start = start;
-        this.finish = end;
+        startCal.setTime(start);
+        endCal.setTime(end);
         this.description = description;
         this.title = title;
         this.group = group;
@@ -31,8 +31,8 @@ public class Event implements Comparable<Event>{
 
     public Event(Date start, Date end, String group, String title, String description, Date notifyOn,
                  String notificationMessage, Color color) {
-        this.start = start;
-        this.finish = end;
+        startCal.setTime(start);
+        endCal.setTime(end);
         this.description = description;
         this.title = title;
         this.group = group;
@@ -42,12 +42,12 @@ public class Event implements Comparable<Event>{
         this.color = color;
     }
 
-    public Date getStart() {
-        return start;
+    public Calendar getStart() {
+        return startCal;
     }
 
-    public Date getFinish() {
-        return finish;
+    public Calendar getEnd() {
+        return endCal;
     }
 
     public String getDescription() {
@@ -81,12 +81,12 @@ public class Event implements Comparable<Event>{
         }
 
         Event otherEvent = (Event) other;
-        return this.title.equals(otherEvent.title) && this.start.equals(((Event) other).start);
+        return this.title.equals(otherEvent.title) && this.startCal.equals(((Event) other).startCal);
 
     }
 
     @Override
     public int compareTo(Event another) {
-        return this.start.compareTo(another.start);
+        return this.startCal.compareTo(another.startCal);
     }
 }
