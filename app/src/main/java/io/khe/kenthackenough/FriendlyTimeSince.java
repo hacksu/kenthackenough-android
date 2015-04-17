@@ -91,25 +91,25 @@ public class FriendlyTimeSince extends TextView {
         String noun;
         long value;
 
-        if (deltaDays > 0.5) {
-            noun = "a day";
+        if (deltaDays > 1.) {
+            noun = "day";
             value = (long)(deltaDays + 0.5);
-        } else if (deltaHours > 1) {
-            noun = "an hour";
+        } else if (deltaHours > 1.) {
+            noun = "hour";
             value = (long)(deltaHours + 0.5);
-        } else if (deltaMinutes > 0.5) {
-            noun = "a minute";
+        } else if (deltaMinutes > 1.) {
+            noun = "minute";
             value = (long)(deltaMinutes + 0.5);
-        } else if (deltaSeconds > 0.5) {
-            noun = "a second";
+        } else if (deltaSeconds > 1.) {
+            noun = "second";
             value = (long)(deltaSeconds+ 0.5);
         } else {
-            noun = "a second";
+            noun = "second";
             value = 1;
         }
 
         if (value == 1) {
-            return "About " + noun + " ago";
+            return "About " + (noun.charAt(0) == 'h' ? "n " : " ") + noun + " ago";
         } else {
             return Long.toString(value) + " " + noun + "s ago";
         }

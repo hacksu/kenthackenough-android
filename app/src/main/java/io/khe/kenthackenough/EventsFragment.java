@@ -51,14 +51,24 @@ public class EventsFragment extends Fragment {
 
 
         eventsManager = ((KHEApp) getActivity().getApplication()).eventsManager;
-        events.setAdapter(new EventsAdapter(getActivity(), eventsManager));
+        EventsAdapter adapter = new EventsAdapter(getActivity(), eventsManager);
+        events.setAdapter(adapter);
 
+        Date now = new Date();
+        int i = 0;
+        for (Event event: adapter.events) {
+            if (event.getStart().getTime().compareTo(now) > 0) {
+                events.scrollToPosition(i);
+                break;
+            }
+            ++i;
+        }
 
         return view;
     }
 
     private class EventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
-        private List<Event> events;
+        public List<Event> events;
         private EventsAdapter self = this;
 
 
@@ -133,8 +143,7 @@ public class EventsFragment extends Fragment {
          */
         public void setFromEvent(Event event) {
             title.setText(event.getTitle());
-            times.setText(event.getStart().get(Calendar.HOUR) + " " + (event.getStart().get(Calendar.AM_PM) == 0?"AM":"PM")
-            + " - " + event.getEnd().get(Calendar.HOUR) + " " + (event.getEnd().get(Calendar.AM_PM) == 0?"AM":"PM"));
+            times.setText(event.getFriendlyTimeRange());
             description.setText(event.getDescription());
         }
 
@@ -149,8 +158,8 @@ public class EventsFragment extends Fragment {
             GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(date);
 
-            this.week_day.setText(dayStringLookUp[cal.get(Calendar.DAY_OF_WEEK)]);
-            this.date.setText(monthStringLookUp[cal.get(Calendar.MONTH)] + " " + cal.get(Calendar.DAY_OF_MONTH));
+            this.week_day.setText(dayStringLookUp[cal.get(Calendar.DAY_OF_WEEK)-1]);
+            this.date.setText(monthStringLookUp[cal.get(Calendar.MONTH)-1] + " " + cal.get(Calendar.DAY_OF_MONTH));
         }
         public void removeDayHeader() {
             mainView.removeView(header);
