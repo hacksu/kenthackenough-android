@@ -109,15 +109,27 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putInt("active_view", mCurrentView);
     }
 
     private void selectView(int view) {
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.container, mViews[view]).commit();
-        mViewDrawerList.setItemChecked(view, true);
+
+        Fragment fragment = fragmentManager.findFragmentById(R.id.container);
+        // we need to check the view is already loaded and if so just re-use it.
+        if (fragment != null && fragment.getClass().equals(mViews[view].getClass())) {
+            mViews[view] = fragment;
+        } else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, mViews[view])
+                    .commit();
+        }
+
         setTitle(mViewTitles[view]);
         mViewDrawerLayout.closeDrawers();
+
+        mViewDrawerList.setItemChecked(view, true);
         mCurrentView = view;
     }
     @Override

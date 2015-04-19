@@ -29,6 +29,7 @@ public class EventsFragment extends Fragment {
 
 
     private EventsManager eventsManager;
+    private boolean first = true;
     private static String[] dayStringLookUp = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday",
             "Thursday", "Friday", "Saturday"};
     private static String[] monthStringLookUp = new String[]{"January", "February", "March", "April",
@@ -53,18 +54,26 @@ public class EventsFragment extends Fragment {
         eventsManager = ((KHEApp) getActivity().getApplication()).eventsManager;
         EventsAdapter adapter = new EventsAdapter(getActivity(), eventsManager);
         events.setAdapter(adapter);
-
-        Date now = new Date();
-        int i = 0;
-        for (Event event: adapter.events) {
-            if (event.getStart().getTime().compareTo(now) > 0) {
-                events.scrollToPosition(i);
-                break;
+        if((savedInstanceState == null || savedInstanceState.getBoolean("new", first)) && first) {
+            Date now = new Date();
+            int i = 0;
+            first = false;
+            for (Event event : adapter.events) {
+                if (event.getStart().getTime().compareTo(now) > 0) {
+                    events.scrollToPosition(i);
+                    break;
+                }
+                ++i;
             }
-            ++i;
         }
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("new", false);
     }
 
     private class EventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
