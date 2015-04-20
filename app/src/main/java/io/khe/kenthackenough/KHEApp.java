@@ -2,6 +2,7 @@ package io.khe.kenthackenough;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.Fragment;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -19,6 +20,7 @@ import io.khe.kenthackenough.backend.Message;
 public class KHEApp extends Application {
     public LiveFeedManager liveFeedManager;
     public EventsManager eventsManager;
+    public Fragment[] views = new Fragment[3];
 
     public static RequestQueue queue;
     public void onCreate() {
@@ -52,7 +54,8 @@ public class KHEApp extends Application {
         eventsManager = new EventsManager(Config.API_URL + "/events", 120000);
         eventsManager.start();
 
-        final Application self = this;
-        final ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        views[0] = new DashboardFragment();
+        views[1] = new LiveFeedFragment();
+        views[2] = new EventsFragment();
     }
 }

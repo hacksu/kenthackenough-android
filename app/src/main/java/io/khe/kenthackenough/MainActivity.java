@@ -22,7 +22,7 @@ public class MainActivity extends ActionBarActivity {
     public LiveFeedManager liveFeedManager;
 
     private String[] mViewTitles;
-    private Fragment[] mViews = new Fragment[3];
+    private Fragment[] mViews;
     private DrawerLayout mViewDrawerLayout;
     private ListView mViewDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -35,15 +35,14 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         mCustomApplication = (KHEApp) getApplication();
+        mViews = mCustomApplication.views;
 
         if (savedInstanceState != null) {
             mCurrentView = savedInstanceState.getInt("active_view");
         }
 
         setContentView(R.layout.activity_main);
-        mViews[0] = new DashboardFragment();
-        mViews[1] = new LiveFeedFragment();
-        mViews[2] = new EventsFragment();
+
 
         mViewTitles = getResources().getStringArray(R.array.views);
         mViewDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
