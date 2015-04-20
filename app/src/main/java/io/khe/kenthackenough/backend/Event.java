@@ -10,6 +10,11 @@ import java.util.GregorianCalendar;
  *
  */
 public class Event implements Comparable<Event>{
+    private static final String[] DAY_STRING_LOOK_UP = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday",
+            "Thursday", "Friday", "Saturday"};
+    private static final String[] MONTH_STRING_LOOK_UP = new String[]{"January", "February", "March", "April",
+            "May", "June", "July", "August", "September", "October", "November", "December"};
+
     private Calendar startCal = new GregorianCalendar();
     private Calendar endCal = new GregorianCalendar();
     private String description;
@@ -54,6 +59,13 @@ public class Event implements Comparable<Event>{
         return String.format("%tl:%tM %s - %tl:%tM %s",
                 getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1)?"AM":"PM",
                 getEnd(), getEnd(), (getEnd().get(Calendar.AM_PM) == 1)?"AM":"PM");
+    }
+
+    public String getDay() {
+        return DAY_STRING_LOOK_UP[startCal.get(Calendar.DAY_OF_WEEK)-1];
+    }
+    public String getSimpleDate() {
+        return MONTH_STRING_LOOK_UP[startCal.get(Calendar.MONTH)] +  " " + startCal.get(Calendar.DAY_OF_MONTH);
     }
 
     public String getDescription() {

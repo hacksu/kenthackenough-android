@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import io.khe.kenthackenough.backend.Event;
@@ -29,10 +28,6 @@ public class EventsFragment extends Fragment {
 
     private EventsManager eventsManager;
     private boolean first = true;
-    private static String[] dayStringLookUp = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday",
-            "Thursday", "Friday", "Saturday"};
-    private static String[] monthStringLookUp = new String[]{"January", "February", "March", "April",
-            "May", "June", "July", "August", "September", "October", "November", "December"};
 
     public EventsFragment() {
         // Required empty public constructor
@@ -105,7 +100,7 @@ public class EventsFragment extends Fragment {
             Event e = events.get(i);
 
             if (i == 0 || events.get(i-1).getStart().get(Calendar.DAY_OF_YEAR) != e.getStart().get(Calendar.DAY_OF_YEAR)) {
-                eventViewHolder.createDayHeader(e.getStart().getTime());
+                eventViewHolder.createDayHeader(e);
             }
 
             eventViewHolder.setFromEvent(e);
@@ -155,7 +150,7 @@ public class EventsFragment extends Fragment {
             description.setText(event.getDescription());
         }
 
-        public void createDayHeader(Date date) {
+        public void createDayHeader(Event e) {
             this.header = (RelativeLayout) LayoutInflater.from(mainView.getContext()).
                     inflate(R.layout.day_header, mainView, false);
 
@@ -163,11 +158,9 @@ public class EventsFragment extends Fragment {
             this.date = (TextView) header.findViewById(R.id.date);
 
             mainView.addView(header, 0);
-            GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(date);
 
-            this.week_day.setText(dayStringLookUp[cal.get(Calendar.DAY_OF_WEEK)-1]);
-            this.date.setText(monthStringLookUp[cal.get(Calendar.MONTH)] + " " + cal.get(Calendar.DAY_OF_MONTH));
+            this.week_day.setText(e.getDay());
+            this.date.setText(e.getSimpleDate());
         }
         public void removeDayHeader() {
             mainView.removeView(header);
