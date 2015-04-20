@@ -1,6 +1,5 @@
 package io.khe.kenthackenough;
 
-import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Fragment;
 

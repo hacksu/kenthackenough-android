@@ -1,7 +1,6 @@
 package io.khe.kenthackenough;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,7 +51,7 @@ public class EventsFragment extends Fragment {
 
 
         eventsManager = ((KHEApp) getActivity().getApplication()).eventsManager;
-        EventsAdapter adapter = new EventsAdapter(getActivity(), eventsManager);
+        EventsAdapter adapter = new EventsAdapter(eventsManager);
         events.setAdapter(adapter);
         if((savedInstanceState == null || savedInstanceState.getBoolean("new", first)) && first) {
             Date now = new Date();
@@ -81,7 +80,7 @@ public class EventsFragment extends Fragment {
         private EventsAdapter self = this;
 
 
-        public EventsAdapter(Context context, EventsManager manager) {
+        public EventsAdapter(EventsManager manager) {
             manager.addListener(new EventsManager.EventsUpdateListener() {
                 @Override
                 public void eventsFetched(List<Event> events) {
