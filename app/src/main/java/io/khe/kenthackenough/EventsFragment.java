@@ -167,7 +167,7 @@ public class EventsFragment extends Fragment {
             cal.setTime(date);
 
             this.week_day.setText(dayStringLookUp[cal.get(Calendar.DAY_OF_WEEK)-1]);
-            this.date.setText(monthStringLookUp[cal.get(Calendar.MONTH)-1] + " " + cal.get(Calendar.DAY_OF_MONTH));
+            this.date.setText(monthStringLookUp[cal.get(Calendar.MONTH)] + " " + cal.get(Calendar.DAY_OF_MONTH));
         }
         public void removeDayHeader() {
             mainView.removeView(header);
