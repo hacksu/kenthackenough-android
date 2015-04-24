@@ -1,6 +1,5 @@
 package io.khe.kenthackenough.backend;
 
-import android.graphics.Color;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
@@ -27,12 +26,6 @@ public class EventsRequest extends Request<List<Event>> {
 
     Response.Listener<List<Event>> listener;
 
-    public EventsRequest(String url, Response.ErrorListener errorListener,
-                          Response.Listener<List<Event>> listener) {
-        super(url, errorListener);
-        this.listener = listener;
-    }
-
     public EventsRequest(int method, String url, Response.ErrorListener errorListener,
                           Response.Listener<List<Event>> listener) {
         super(method, url, errorListener);
@@ -50,16 +43,18 @@ public class EventsRequest extends Request<List<Event>> {
             for (int i = 0; i<JsonEvents.length(); ++i) {
                 JSONObject event = JsonEvents.getJSONObject(i);
 
-                String title = event.getString("name");
+                String title = event.getString("title");
+                String description = event.getString("description");
                 Date start = new DateTime(event.getString("start")).toDate();
                 Date end = new DateTime(event.getString("end")).toDate();
+                String type = event.getString("type");
+                String location = event.getString("location");
                 String group = event.getString("group");
                 Date notifyOn = null;
                 if (event.getBoolean("notify")) {
                     notifyOn = (Date) start.clone();
                 }
-                Event e = new Event(start, end, group, title, "This is filler text until the api supports it",
-                        notifyOn, title + " is coming up", new Color());
+                Event e = new Event(start, end, title, type, group, description, location);
                 events.add(e);
 
             }

@@ -19,32 +19,24 @@ public class Event implements Comparable<Event>{
     private Calendar endCal = new GregorianCalendar();
     private String description;
     private String title;
+    private String type;
     private String group;
+    private String location;
 
+    //currently unused
     private Date notifyOn; // if null ignored
     private String notificationMessage;
 
     private Color color;
 
-    public Event(Date start, Date end, String group, String title, String description) {
+    public Event(Date start, Date end, String title, String type, String group, String description, String location) {
         startCal.setTime(start);
         endCal.setTime(end);
         this.description = description;
         this.title = title;
+        this.type = type;
         this.group = group;
-    }
-
-    public Event(Date start, Date end, String group, String title, String description, Date notifyOn,
-                 String notificationMessage, Color color) {
-        startCal.setTime(start);
-        endCal.setTime(end);
-        this.description = description;
-        this.title = title;
-        this.group = group;
-
-        this.notifyOn = notifyOn;
-        this.notificationMessage = notificationMessage;
-        this.color = color;
+        this.location = location;
     }
 
     public Calendar getStart() {
@@ -78,6 +70,14 @@ public class Event implements Comparable<Event>{
 
     public String getGroup() {
         return group;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public Date getNotifyOn() {
