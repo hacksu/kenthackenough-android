@@ -50,7 +50,7 @@ public class KHEApp extends Application {
         liveFeedManager.start();
 
 
-        eventsManager = new EventsManager(Config.API_URL + "/events", 120000);
+        eventsManager = new EventsManager(Config.API_URL + "/events", 120000, this);
         eventsManager.start();
 
         views[0] = new DashboardFragment();

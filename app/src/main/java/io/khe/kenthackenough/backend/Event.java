@@ -26,6 +26,7 @@ public class Event implements Comparable<Event>{
     private String type;
     private String group;
     private String location;
+    private Long[] id;
 
     //currently unused
     private Date notifyOn; // if null ignored
@@ -33,7 +34,8 @@ public class Event implements Comparable<Event>{
 
     private Color color;
 
-    public Event(Date start, Date end, String title, String type, String group, String description, String location) {
+    public Event(Date start, Date end, String title, String type, String group, String description,
+                 String location, Long[] id) {
         startCal.setTime(start);
         endCal.setTime(end);
         this.description = description;
@@ -41,6 +43,11 @@ public class Event implements Comparable<Event>{
         this.type = type;
         this.group = group;
         this.location = location;
+        this.id = id;
+    }
+
+    public Event(Long[] id) {
+        this.id = id;
     }
 
     public static Event getFromJSON(JSONObject json) throws JSONException {
@@ -52,7 +59,12 @@ public class Event implements Comparable<Event>{
         String location = json.getString("location");
         String group = json.getString("group");
 
-        return new Event(start, end, title, type, group, description, location);
+        String uuidString = json.getString("_id");
+        Long[] id = new Long[2];
+        id[0] = Long.decode('#' + uuidString.substring(0, 12));
+        id[1] = Long.decode('#' + uuidString.substring(12));
+
+        return new Event(start, end, title, type, group, description, location, id);
     }
 
     public Calendar getStart() {
@@ -109,13 +121,19 @@ public class Event implements Comparable<Event>{
     }
 
     @Override
+    public int hashCode() {
+        return id[1].intValue(); // todo better hash
+    }
+
+
+    @Override
     public boolean equals(Object other) {
         if (!(other instanceof Event)) {
             return super.equals(other);
         }
 
         Event otherEvent = (Event) other;
-        return this.title.equals(otherEvent.title) && this.startCal.equals(((Event) other).startCal);
+        return this.id[0].equals(otherEvent.id[0]) && this.id[1].equals(otherEvent.id[1]);
 
     }
 
