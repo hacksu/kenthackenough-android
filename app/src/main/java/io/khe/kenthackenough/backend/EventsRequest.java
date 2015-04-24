@@ -42,21 +42,7 @@ public class EventsRequest extends Request<List<Event>> {
 
             for (int i = 0; i<JsonEvents.length(); ++i) {
                 JSONObject event = JsonEvents.getJSONObject(i);
-
-                String title = event.getString("title");
-                String description = event.getString("description");
-                Date start = new DateTime(event.getString("start")).toDate();
-                Date end = new DateTime(event.getString("end")).toDate();
-                String type = event.getString("type");
-                String location = event.getString("location");
-                String group = event.getString("group");
-                Date notifyOn = null;
-                if (event.getBoolean("notify")) {
-                    notifyOn = (Date) start.clone();
-                }
-                Event e = new Event(start, end, title, type, group, description, location);
-                events.add(e);
-
+                events.add(Event.getFromJSON(event));
             }
         } catch (JSONException e) {
             Log.e("KHE2015", "failed to parse response from " + getUrl(), e);

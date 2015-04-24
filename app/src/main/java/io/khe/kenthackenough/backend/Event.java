@@ -2,6 +2,10 @@ package io.khe.kenthackenough.backend;
 
 import android.graphics.Color;
 
+import org.joda.time.DateTime;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -37,6 +41,18 @@ public class Event implements Comparable<Event>{
         this.type = type;
         this.group = group;
         this.location = location;
+    }
+
+    public static Event getFromJSON(JSONObject json) throws JSONException {
+        String title = json.getString("title");
+        String description = json.getString("description");
+        Date start = new DateTime(json.getString("start")).toDate();
+        Date end = new DateTime(json.getString("end")).toDate();
+        String type = json.getString("type");
+        String location = json.getString("location");
+        String group = json.getString("group");
+
+        return new Event(start, end, title, type, group, description, location);
     }
 
     public Calendar getStart() {
