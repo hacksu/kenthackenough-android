@@ -52,12 +52,12 @@ public class Event implements Comparable<Event>{
 
     public static Event getFromJSON(JSONObject json) throws JSONException {
         String title = json.getString("title");
-        String description = json.getString("description");
+        String description = json.optString("description");
         Date start = new DateTime(json.getString("start")).toDate();
         Date end = new DateTime(json.getString("end")).toDate();
-        String type = json.getString("type");
-        String location = json.getString("location");
-        String group = json.getString("group");
+        String type = json.optString("type");
+        String location = json.optString("location");
+        String group = json.optString("group");
 
         String uuidString = json.getString("_id");
         Long[] id = new Long[2];
