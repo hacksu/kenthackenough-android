@@ -1,6 +1,7 @@
 package io.khe.kenthackenough.backend;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -102,6 +103,10 @@ public class Event implements Comparable<Event>{
 
     public String getType() {
         return type;
+    }
+
+    public Drawable getIcon() {
+        return null;
     }
 
     public String getLocation() {

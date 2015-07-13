@@ -8,9 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -125,6 +128,8 @@ public class EventsFragment extends Fragment {
         private TextView title;
         private TextView times;
         private TextView description;
+        private ImageView icon;
+        private TextView type;
 
         private TextView week_day;
         private TextView date;
@@ -135,8 +140,10 @@ public class EventsFragment extends Fragment {
         public EventViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.event_title);
-            times = (TextView) itemView.findViewById(R.id.event_times);
+            times = (TextView) itemView.findViewById(R.id.event_time_range);
             description = (TextView) itemView.findViewById(R.id.event_description);
+            type = (TextView) itemView.findViewById(R.id.event_type);
+            icon = (ImageView) itemView.findViewById(R.id.icon);
             this.mainView = (LinearLayout) itemView;
         }
 
@@ -147,6 +154,7 @@ public class EventsFragment extends Fragment {
         public void setFromEvent(Event event) {
             title.setText(event.getTitle());
             times.setText(event.getFriendlyTimeRange());
+            type.setText(event.getType());
             description.setText(event.getDescription());
         }
 

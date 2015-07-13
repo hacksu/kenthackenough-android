@@ -25,12 +25,6 @@ public class MessageRequest extends Request<List<Message>> {
 
     Response.Listener<List<Message>> listener;
 
-    public MessageRequest(String url, Response.ErrorListener errorListener,
-                          Response.Listener<List<Message>> listener) {
-        super(url, errorListener);
-        this.listener = listener;
-    }
-
     public MessageRequest(int method, String url, Response.ErrorListener errorListener,
                           Response.Listener<List<Message>> listener) {
         super(method, url, errorListener);
