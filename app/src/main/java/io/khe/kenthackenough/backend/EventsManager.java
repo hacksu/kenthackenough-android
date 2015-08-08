@@ -47,7 +47,6 @@ public class EventsManager {
             @Override
             public void onResponse(List<Event> eventsFromServer) {
                 events = eventsFromServer;
-
                 for (EventsUpdateListener listener : updateListeners) {
                     listener.eventsFetched(events);
                 }

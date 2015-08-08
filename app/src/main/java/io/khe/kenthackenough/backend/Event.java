@@ -7,14 +7,18 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import io.khe.kenthackenough.EventNotificationPoster;
+import io.khe.kenthackenough.KHEApp;
+
 /**
  *
  */
-public class Event implements Comparable<Event>{
+public class Event implements Comparable<Event>, Serializable{
     private static final String[] DAY_STRING_LOOK_UP = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday",
             "Thursday", "Friday", "Saturday"};
     private static final String[] MONTH_STRING_LOOK_UP = new String[]{"January", "February", "March", "April",
@@ -22,6 +26,7 @@ public class Event implements Comparable<Event>{
 
     private Calendar startCal = new GregorianCalendar();
     private Calendar endCal = new GregorianCalendar();
+    private boolean notify = false;
     private String description;
     private String title;
     private String type;
@@ -36,15 +41,22 @@ public class Event implements Comparable<Event>{
     private Color color;
 
     public Event(Date start, Date end, String title, String type, String group, String description,
-                 String location, Long[] id) {
+                 String location, Long[] id, boolean notify) {
         startCal.setTime(start);
         endCal.setTime(end);
+        this.notify = notify;
         this.description = description;
         this.title = title;
         this.type = type;
         this.group = group;
         this.location = location;
         this.id = id;
+
+        // schedule an event if we should notify
+        if (notify) {
+            EventNotificationPoster.schedule(KHEApp.self, this);
+        }
+
     }
 
     public Event(Long[] id) {
@@ -59,13 +71,14 @@ public class Event implements Comparable<Event>{
         String type = json.optString("type");
         String location = json.optString("location");
         String group = json.optString("group");
+        boolean notify = json.getBoolean("notify");
 
         String uuidString = json.getString("_id");
         Long[] id = new Long[2];
         id[0] = Long.decode('#' + uuidString.substring(0, 12));
         id[1] = Long.decode('#' + uuidString.substring(12));
 
-        return new Event(start, end, title, type, group, description, location, id);
+        return new Event(start, end, title, type, group, description, location, id, notify);
     }
 
     public Calendar getStart() {
@@ -145,5 +158,9 @@ public class Event implements Comparable<Event>{
     @Override
     public int compareTo(Event another) {
         return this.startCal.compareTo(another.startCal);
+    }
+
+    public Long[] getID() {
+        return id.clone();
     }
 }

@@ -2,6 +2,7 @@ package io.khe.kenthackenough;
 
 import android.app.Application;
 import android.app.Fragment;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -22,8 +23,15 @@ public class KHEApp extends Application {
     public Fragment[] views = new Fragment[3];
 
     public static RequestQueue queue;
+    public static KHEApp self;
     public void onCreate() {
         super.onCreate();
+
+        Log.e("KHE2015", "app started");
+
+        // really bad idea probably, I'll do this better at some point
+        self = this;
+
         queue = Volley.newRequestQueue(this);
         // start the LiveFeedManager
         liveFeedManager = new LiveFeedManager(Config.API_URL + "/messages", 120000, this);
