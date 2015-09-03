@@ -2,6 +2,7 @@ package io.khe.kenthackenough.backend;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -54,6 +55,7 @@ public class Event implements Comparable<Event>, Serializable{
 
         // schedule an event if we should notify
         if (notify) {
+            Log.i("KHE2015", "scheduling notification");
             EventNotificationPoster.schedule(KHEApp.self, this);
         }
 

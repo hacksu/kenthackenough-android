@@ -18,18 +18,26 @@ public class EventNotificationPoster  extends BroadcastReceiver {
      * @param event the event to schedule
      */
     public static void schedule(Context context,Event event) {
+
         Intent intent = new Intent(context, EventNotificationPoster.class);
         intent.putExtra("event", event.getID());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0, intent, PendingIntent.FLAG_ONE_SHOT);
+        try {
+            pendingIntent.send();
+            Log.i("KHE 2015", "sent pendingIntent");
 
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.set(AlarmManager.RTC_WAKEUP, event.getStart().getTimeInMillis(), pendingIntent);
+        alarm.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, event.getStart().getTimeInMillis(), pendingIntent);
     }
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.i("KHE 2015", "triggering notification");
+
         Long[] eventID = (Long[]) intent.getSerializableExtra("event");
         Event idOnly = new Event(eventID);
-
         KHEApp app = KHEApp.self;
         Event event = null;
         for (Event e: app.eventsManager.events){
@@ -44,7 +52,6 @@ public class EventNotificationPoster  extends BroadcastReceiver {
             Log.w("KHE 2015", "event for id (" + eventID.toString() + ") not found by EventNotificationPoster");
             return;
         }
-
 
     }
 }

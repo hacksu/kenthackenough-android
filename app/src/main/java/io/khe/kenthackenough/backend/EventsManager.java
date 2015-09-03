@@ -36,6 +36,7 @@ public class EventsManager {
 
     private Handler uiThreadHandler;
     private Socket socket;
+    private String url;
 
     /**
      * Standard constructor for a EventsManager (does not start it pulling)
@@ -57,18 +58,37 @@ public class EventsManager {
         listEvents.setTag("listMessages");
         this.checkDelay = checkDelay;
 
+        this.url = url;
+
         uiThreadHandler = new Handler(context.getMainLooper());
+    }
 
-        try {
-            socket = IO.socket(url);
-        } catch (URISyntaxException e) {
-            Log.e("KHE 2015", "API url " + url + " failed");
-        }
+    /**
+     * Starts a repeated request to the server to fetch all messages
+     */
+    public void start() {
+        timer.scheduleAtFixedRate(new TimerTask() {
+            synchronized public void run() {
+                KHEApp.queue.add(listEvents);
+                if (socket == null || !socket.connected()) {
+                    try {
+                        socket = IO.socket(url);
+                        setSocketIO();
+                        socket.connect();
+                    } catch (URISyntaxException e1) {
+                        Log.e("KHE2015", "API url " + url + " failed");
+                    }
+                }
+            }
+        }, 0, checkDelay);
+    }
 
+    public void setSocketIO(){
         socket.on("create", new Emitter.Listener() {
-
             @Override
             public void call(Object... args) {
+                Log.i("KHE2015","create events");
+
                 JSONObject json = (JSONObject) args[0];
                 try {
                     final Event event = Event.getFromJSON(json);
@@ -91,6 +111,8 @@ public class EventsManager {
         socket.on("delete", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+                Log.i("KHE2015","delete events");
+
                 JSONObject json = (JSONObject) args[0];
                 try {
                     String uuidString = json.getString("_id");
@@ -118,6 +140,7 @@ public class EventsManager {
 
             @Override
             public void call(Object... args) {
+                Log.i("KHE2015","updating events");
                 try {
                     final Event updatedEvent = Event.getFromJSON((JSONObject) args[0]);
                     uiThreadHandler.post(new Runnable() {
@@ -137,18 +160,6 @@ public class EventsManager {
                 }
             }
         });
-    }
-
-    /**
-     * Starts a repeated request to the server to fetch all messages
-     */
-    public void start() {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            synchronized public void run() {
-                KHEApp.queue.add(listEvents);
-            }
-
-        }, 0, checkDelay);
     }
 
     /**
