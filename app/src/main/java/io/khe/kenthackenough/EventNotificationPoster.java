@@ -13,24 +13,20 @@ import io.khe.kenthackenough.backend.Event;
  * EventNotificationPoster This is a small class designed to post events at a later date
  */
 public class EventNotificationPoster  extends BroadcastReceiver {
+
+    private static int max_id = 0;
     /**
      * schedule allows for easy scheduling of a future event's notification
      * @param event the event to schedule
      */
-    public static void schedule(Context context,Event event) {
+    public static int schedule(Context context, Event event) {
 
         Intent intent = new Intent(context, EventNotificationPoster.class);
         intent.putExtra("event", event.getID());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0, intent, PendingIntent.FLAG_ONE_SHOT);
-        try {
-            pendingIntent.send();
-            Log.i("KHE 2015", "sent pendingIntent");
-
-        } catch (PendingIntent.CanceledException e) {
-            e.printStackTrace();
-        }
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, max_id, intent, PendingIntent.FLAG_ONE_SHOT);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, event.getStart().getTimeInMillis(), pendingIntent);
+        alarm.set(AlarmManager.RTC_WAKEUP, event.getStart().getTimeInMillis(), pendingIntent);
+        return max_id++;
     }
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -46,7 +42,7 @@ public class EventNotificationPoster  extends BroadcastReceiver {
                 break;
             }
         }
-
+        
         // make sure we found the event possible reasons we wouldn't include it no longer existing
         if (event == null) {
             Log.w("KHE 2015", "event for id (" + eventID.toString() + ") not found by EventNotificationPoster");
