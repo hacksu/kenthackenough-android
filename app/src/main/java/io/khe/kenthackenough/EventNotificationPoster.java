@@ -21,6 +21,10 @@ public class EventNotificationPoster  extends BroadcastReceiver {
      */
     public static int schedule(Context context, Event event) {
 
+        if(event.getStart().getTimeInMillis() < System.currentTimeMillis()) {
+            return -1;
+        }
+
         Intent intent = new Intent(context, EventNotificationPoster.class);
         intent.putExtra("event", event.getID());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, max_id, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -42,12 +46,13 @@ public class EventNotificationPoster  extends BroadcastReceiver {
                 break;
             }
         }
-        
+
         // make sure we found the event possible reasons we wouldn't include it no longer existing
         if (event == null) {
             Log.w("KHE 2015", "event for id (" + eventID.toString() + ") not found by EventNotificationPoster");
             return;
         }
 
+        event.notify(context);
     }
 }
