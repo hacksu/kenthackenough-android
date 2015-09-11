@@ -19,9 +19,9 @@ public class EventNotificationPoster  extends BroadcastReceiver {
      * schedule allows for easy scheduling of a future event's notification
      * @param event the event to schedule
      */
-    public static int schedule(Context context, Event event) {
+    public static int schedule(Context context, Event event, long time, long warning) {
 
-        if(event.getStart().getTimeInMillis() < System.currentTimeMillis()) {
+        if(time < System.currentTimeMillis()) {
             return -1;
         }
 
@@ -29,7 +29,7 @@ public class EventNotificationPoster  extends BroadcastReceiver {
         intent.putExtra("event", event.getID());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, max_id, intent, PendingIntent.FLAG_ONE_SHOT);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.set(AlarmManager.RTC_WAKEUP, event.getStart().getTimeInMillis(), pendingIntent);
+        alarm.set(AlarmManager.RTC_WAKEUP, time - warning, pendingIntent);
         return max_id++;
     }
     @Override

@@ -48,9 +48,12 @@ public class Event implements Comparable<Event>, Serializable{
     private Date notifyOn; // if null ignored
     private String notificationMessage;
 
+    private int ScheduledNotificationID;
+
     private Color color;
     private int notificationId;
     private static int nextNotificationID = 0;
+    private static final int WARNING = 10 * 60 * 1000; // amount of time in milliseconds to warn the user before an event
 
     public Event(Date start, Date end, String title, String type, String group, String description,
                  String location, Long[] id, boolean notify) {
@@ -67,7 +70,7 @@ public class Event implements Comparable<Event>, Serializable{
         // schedule an event if we should notify
         if (notify) {
             Log.i("KHE2015", "scheduling notification");
-            EventNotificationPoster.schedule(KHEApp.self, this);
+            EventNotificationPoster.schedule(KHEApp.self, this, getStart().getTimeInMillis(), WARNING);
         }
 
     }
@@ -115,6 +118,7 @@ public class Event implements Comparable<Event>, Serializable{
         return MONTH_STRING_LOOK_UP[startCal.get(Calendar.MONTH)] +  " " + startCal.get(Calendar.DAY_OF_MONTH);
     }
 
+    // adds a notification for the event
     public void notify(Context context) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.clover);
