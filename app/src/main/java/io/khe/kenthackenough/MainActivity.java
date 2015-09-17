@@ -8,6 +8,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +27,6 @@ public class MainActivity extends ActionBarActivity {
     private DrawerLayout mViewDrawerLayout;
     private ListView mViewDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-    private KHEApp mCustomApplication;
 
     private int mCurrentView = 0;
 
@@ -34,8 +34,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCustomApplication = (KHEApp) getApplication();
-        mViews = mCustomApplication.views;
+        mViews = getPanes();
+
 
         if (savedInstanceState != null) {
             mCurrentView = savedInstanceState.getInt("active_view");
@@ -57,6 +57,9 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = getIntent();
         mCurrentView = intent.getIntExtra("view", mCurrentView);
 
+        Log.i(Config.DEBUG_TAG, "main activity loaded and switching to " + mCurrentView);
+
+
         selectView(mCurrentView);
 
         // todo add actual icons here built for purpose
@@ -65,11 +68,17 @@ public class MainActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-        // start the LiveFeedManager
-        liveFeedManager = mCustomApplication.liveFeedManager;
     }
 
+    private Fragment[] getPanes(){
+        Fragment[] views  = new Fragment[3];
+        views = new Fragment[3];
+        views[0] = new DashboardFragment();
+        views[1] = new LiveFeedFragment();
+        views[2] = new EventsFragment();
+
+        return views;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

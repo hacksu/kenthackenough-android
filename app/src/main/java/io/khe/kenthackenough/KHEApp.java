@@ -20,7 +20,6 @@ import io.khe.kenthackenough.backend.Message;
 public class KHEApp extends Application {
     public LiveFeedManager liveFeedManager;
     public EventsManager eventsManager;
-    public Fragment[] views = new Fragment[3];
 
     public static RequestQueue queue;
     public static KHEApp self;
@@ -60,9 +59,5 @@ public class KHEApp extends Application {
 
         eventsManager = new EventsManager(Config.API_URL + "/events", 120000, this);
         eventsManager.start();
-
-        views[0] = new DashboardFragment();
-        views[1] = new LiveFeedFragment();
-        views[2] = new EventsFragment();
     }
 }
