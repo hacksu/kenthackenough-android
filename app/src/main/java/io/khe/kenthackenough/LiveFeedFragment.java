@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,6 +105,7 @@ public class LiveFeedFragment extends Fragment {
             Message m = messages.get(i);
 
             messageViewHolder.message.setText(m.getFormatted());
+            messageViewHolder.message.setMovementMethod(LinkMovementMethod.getInstance());
             messageViewHolder.timeSince.setTime(m.getCreated().getTime());
         }
 
