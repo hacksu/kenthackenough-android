@@ -9,6 +9,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.List;
 
+import io.khe.kenthackenough.backend.AboutManager;
 import io.khe.kenthackenough.backend.EventsManager;
 import io.khe.kenthackenough.backend.LiveFeedManager;
 import io.khe.kenthackenough.backend.Message;
@@ -20,6 +21,7 @@ import io.khe.kenthackenough.backend.Message;
 public class KHEApp extends Application {
     public LiveFeedManager liveFeedManager;
     public EventsManager eventsManager;
+    public AboutManager aboutManager;
 
     public static RequestQueue queue;
     public static KHEApp self;
@@ -59,5 +61,8 @@ public class KHEApp extends Application {
 
         eventsManager = new EventsManager(Config.API_URL + "/events", 120000, this);
         eventsManager.start();
+
+        aboutManager = new AboutManager(Config.API_URL + "/about", 120000, this);
+        aboutManager.start();
     }
 }

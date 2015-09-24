@@ -43,33 +43,10 @@ public class Message implements Comparable<Message> {
         this.message = message;
 
         // create a formatted string from the html and strip bad links
-        formatted = new SpannableString(Html.fromHtml(message));
-        URLSpan[] links = formatted.getSpans(0,formatted.length(), URLSpan.class);
+        formatted = Utilities.getSpannableFromHTML(message);
+
         this.id = id;
         idToMessage.put(Arrays.asList(id), this);
-
-        for (URLSpan link : links) {
-
-            // remove and re-add if it's valid
-            int start = formatted.getSpanStart(link);
-            int end = formatted.getSpanEnd(link);
-            int flags = formatted.getSpanFlags(link);
-            formatted.removeSpan(link);
-            try {
-                URL url = new URL(link.getURL());
-                link = new URLSpan(url.toString());
-                formatted.setSpan(link, start, end, flags);
-            } catch (MalformedURLException e) {
-                try {
-                    // make an attempt to fix simple cases of missing http://
-                    URL url = new URL("http://" + link.getURL());
-                    link = new URLSpan(url.toString());
-                    formatted.setSpan(link, start, end, flags);
-                } catch (MalformedURLException e1) {
-                    Log.e("KHE2015", "Bad URL: " +link.getURL()+ " in " + message);
-                }
-            }
-        }
     }
 
     public static Message getFromJSON(JSONObject json) throws JSONException {

@@ -71,11 +71,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private Fragment[] getPanes(){
-        Fragment[] views  = new Fragment[3];
-        views = new Fragment[3];
+        Fragment[] views  = new Fragment[4];
         views[0] = new DashboardFragment();
         views[1] = new LiveFeedFragment();
         views[2] = new EventsFragment();
+        views[3] = new AboutFragment();
 
         return views;
     }

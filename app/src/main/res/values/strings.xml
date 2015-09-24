@@ -10,9 +10,9 @@
         <item>Dashboard</item>
         <item>Updates</item>
         <item>Calender</item>
+        <item>Links</item>
     </string-array>
 
     <string name="title_activity_dashboard_fragment">DashboardFragment</string>
-    <string name="hello_world">Hello world!</string>
 
 </resources>
