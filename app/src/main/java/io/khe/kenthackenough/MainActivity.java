@@ -17,6 +17,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import io.khe.kenthackenough.backend.LiveFeedManager;
+import io.khe.kenthackenough.fragments.AboutFragment;
+import io.khe.kenthackenough.fragments.DashboardFragment;
+import io.khe.kenthackenough.fragments.EventsFragment;
+import io.khe.kenthackenough.fragments.LiveFeedFragment;
 
 
 public class MainActivity extends ActionBarActivity {

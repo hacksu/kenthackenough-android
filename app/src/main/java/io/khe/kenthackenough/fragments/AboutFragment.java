@@ -1,4 +1,4 @@
-package io.khe.kenthackenough;
+package io.khe.kenthackenough.fragments;
 
 import android.os.Bundle;
 import android.app.Fragment;
@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import io.khe.kenthackenough.Config;
+import io.khe.kenthackenough.KHEApp;
+import io.khe.kenthackenough.R;
 import io.khe.kenthackenough.backend.AboutManager;
 
 public class AboutFragment extends Fragment {

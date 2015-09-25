@@ -1,4 +1,4 @@
-package io.khe.kenthackenough;
+package io.khe.kenthackenough.fragments;
 
 
 import android.app.Fragment;
@@ -15,6 +15,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.khe.kenthackenough.FriendlyTimeSince;
+import io.khe.kenthackenough.KHEApp;
+import io.khe.kenthackenough.R;
 import io.khe.kenthackenough.backend.LiveFeedManager;
 import io.khe.kenthackenough.backend.Message;
 

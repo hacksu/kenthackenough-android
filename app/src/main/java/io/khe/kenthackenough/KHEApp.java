@@ -1,7 +1,6 @@
 package io.khe.kenthackenough;
 
 import android.app.Application;
-import android.app.Fragment;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
@@ -13,7 +12,8 @@ import io.khe.kenthackenough.backend.AboutManager;
 import io.khe.kenthackenough.backend.EventsManager;
 import io.khe.kenthackenough.backend.LiveFeedManager;
 import io.khe.kenthackenough.backend.Message;
-import io.khe.kenthackenough.services.GcmRegisterer;
+import io.khe.kenthackenough.fragments.LiveFeedFragment;
+import io.khe.kenthackenough.GCM.GcmRegisterer;
 
 /**
  * Custom application to store data and service that must be shared between activities and persist

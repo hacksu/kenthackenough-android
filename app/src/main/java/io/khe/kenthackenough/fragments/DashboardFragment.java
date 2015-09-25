@@ -1,10 +1,12 @@
-package io.khe.kenthackenough;
+package io.khe.kenthackenough.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import io.khe.kenthackenough.R;
 
 
 public class DashboardFragment extends Fragment {

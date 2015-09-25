@@ -1,4 +1,4 @@
-package io.khe.kenthackenough.services;
+package io.khe.kenthackenough.GCM;
 
 import android.util.Log;
 

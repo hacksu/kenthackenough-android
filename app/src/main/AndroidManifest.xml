@@ -46,21 +46,21 @@
         </receiver>
 
         <service
-            android:name=".services.GcmListener"
+            android:name=".GCM.GcmListener"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".services.InstanceIdListener"
+            android:name=".GCM.InstanceIdListener"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name=".services.GcmRegisterer"
+            android:name=".GCM.GcmRegisterer"
             android:exported="false" >
         </service>
     </application>

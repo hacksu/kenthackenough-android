@@ -1,4 +1,4 @@
-package io.khe.kenthackenough;
+package io.khe.kenthackenough.fragments;
 
 
 import android.app.Fragment;
@@ -19,6 +19,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import io.khe.kenthackenough.KHEApp;
+import io.khe.kenthackenough.R;
 import io.khe.kenthackenough.backend.Event;
 import io.khe.kenthackenough.backend.EventsManager;
 
