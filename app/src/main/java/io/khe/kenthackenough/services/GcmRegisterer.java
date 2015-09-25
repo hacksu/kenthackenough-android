@@ -58,11 +58,9 @@ public class GcmRegisterer extends IntentService {
             String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
 
-            // only register if we have not yet registered
-            if(!sharedPreferences.getBoolean("Registered", false)) {
-                deregisterWithBackend(token);
-                registerWithBackend(token);
-            }
+            // it's not terribly expensive to always register.
+            deregisterWithBackend(token);
+            registerWithBackend(token);
 
             sharedPreferences.edit().putBoolean("Registered", true).apply();
 
@@ -75,9 +73,7 @@ public class GcmRegisterer extends IntentService {
 
     void deregisterWithBackend(String token) throws IOException {
         HttpDelete deristerRequest = new HttpDelete(Config.API_URL + "/devices/"+token);
-        while(httpClient.execute(deristerRequest).getStatusLine().getStatusCode() == 200){
-            Log.d(Config.DEBUG_TAG, "deregistered once");
-        }
+        httpClient.execute(deristerRequest);
     }
 
     void registerWithBackend(String token) throws IOException {

@@ -8,12 +8,11 @@ import com.google.android.gms.gcm.GcmListenerService;
 import io.khe.kenthackenough.Config;
 
 /**
- * Created by Isaac on 9/24/2015.
+ * GcmListener is a service which will receive messaging from the backend through GCM messaging
  */
 public class GcmListener extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
         Log.d(Config.DEBUG_TAG, "got " + data);
     }
 
