@@ -13,6 +13,7 @@ import io.khe.kenthackenough.backend.AboutManager;
 import io.khe.kenthackenough.backend.EventsManager;
 import io.khe.kenthackenough.backend.LiveFeedManager;
 import io.khe.kenthackenough.backend.Message;
+import io.khe.kenthackenough.services.GcmRegisterer;
 
 /**
  * Custom application to store data and service that must be shared between activities and persist
@@ -64,5 +65,7 @@ public class KHEApp extends Application {
 
         aboutManager = new AboutManager(Config.API_URL + "/about", 120000, this);
         aboutManager.start();
+
+        GcmRegisterer.register(this);
     }
 }
