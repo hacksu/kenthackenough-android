@@ -14,7 +14,7 @@ public class GcmListener extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String message = data.getString("message");
-        Log.d(Config.DEBUG_TAG, "got " + message);
+        Log.d(Config.DEBUG_TAG, "got " + data);
     }
 
 }
