@@ -26,7 +26,6 @@ import io.khe.kenthackenough.backend.Message;
  * Shows a list of messages from the hackathond
  */
 public class LiveFeedFragment extends Fragment {
-    private LiveFeedManager liveFeedManager;
     public static boolean mActive = false;
     NotificationManager notificationManager;
     public LiveFeedFragment() {}
@@ -61,7 +60,7 @@ public class LiveFeedFragment extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         messages.setLayoutManager(llm);
 
-        liveFeedManager = ((KHEApp) getActivity().getApplication()).liveFeedManager;
+        LiveFeedManager liveFeedManager = ((KHEApp) getActivity().getApplication()).liveFeedManager;
         messages.setAdapter(new LiveFeedAdapter(liveFeedManager));
         return view;
     }

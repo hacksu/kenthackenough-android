@@ -1,6 +1,7 @@
 package io.khe.kenthackenough.backend;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
@@ -23,6 +24,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.khe.kenthackenough.Config;
+import io.khe.kenthackenough.GCM.GcmListener;
 import io.khe.kenthackenough.KHEApp;
 
 /**
@@ -32,11 +35,14 @@ public class LiveFeedManager {
     private Request listMessages;
     public volatile List<Message> messages = new LinkedList<>();
     private Timer timer = new Timer();
+
     private Set<NewMessagesListener> newMessagesListeners = new HashSet<>();
     private Set<UpdatedMessageListener> updatedMessageListeners = new HashSet<>();
     private Set<DeletedMessageListener> deletedMessageListeners = new HashSet<>();
+
     private int checkDelay;
     private Handler uiThreadHandler;
+    private Context applicationContext;
 
     private Socket socket;
 
@@ -76,6 +82,8 @@ public class LiveFeedManager {
 
             }
         });
+
+        applicationContext = context;
         listMessages.setTag("listMessages");
         this.checkDelay = checkDelay;
         uiThreadHandler = new Handler(context.getMainLooper());
@@ -167,14 +175,26 @@ public class LiveFeedManager {
      * Starts a repeated request to the server to fetch all messages
      */
     public void start() {
-        socket.connect();
+        //socket.connect();
+
+        GcmListener.addListener(applicationContext, "messages", new GcmListener.GcmMessageListener() {
+            @Override
+            public void onReceive(Bundle message) {
+                Log.d(Config.DEBUG_TAG, "Received a message from GCM");
+                update();
+            }
+        });
 
         timer.scheduleAtFixedRate(new TimerTask() {
-            synchronized public void run() {
-                KHEApp.queue.add(listMessages);
+            public void run() {
+                update();
             }
 
         }, 0, checkDelay);
+    }
+
+    private void update() {
+        KHEApp.queue.add(listMessages);
     }
 
     /**

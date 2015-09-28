@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
@@ -46,6 +47,13 @@ public class GcmRegisterer extends IntentService {
         context.startService(intent);
     }
 
+    public static void subscribe(Context context, String topic) {
+        Intent subscribeIntent = new Intent(context, GcmRegisterer.class);
+        subscribeIntent.putExtra("topic", topic);
+        context.startService(subscribeIntent);
+
+    }
+
     public GcmRegisterer() {
         super("GcmRegisterer");
     }
@@ -58,9 +66,10 @@ public class GcmRegisterer extends IntentService {
             String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
 
-            // it's not terribly expensive to always register.
-            deregisterWithBackend(token);
-            registerWithBackend(token);
+            String topic = intent.getStringExtra("topic");
+            if (topic != null) {
+                subscribeToTopic(token, topic);
+            }
 
             sharedPreferences.edit().putBoolean("Registered", true).apply();
 
@@ -68,6 +77,14 @@ public class GcmRegisterer extends IntentService {
             sharedPreferences.edit().putBoolean("Registered", false).apply();
             Log.e(Config.DEBUG_TAG, "failed to register", e);
         }
+    }
+
+    private void subscribeToTopic(String token, String topic) throws IOException {
+        GcmPubSub pubSub = GcmPubSub.getInstance(this);
+
+        pubSub.subscribe(token, "/topics/" + topic, null);
+
+        Log.d(Config.DEBUG_TAG,"registered topic " + topic);
     }
 
 
