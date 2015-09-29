@@ -67,9 +67,6 @@ public class FriendlyTimeSince extends TextView {
         long deltaHours = deltaMinutes / 60;
         long deltaDays = deltaHours / 24;
 
-        String noun;
-        long value;
-
         if (deltaDays > 0) {
             return 86400000; // one day worth of milliseconds
         } else if (deltaHours != 0) {
@@ -109,7 +106,7 @@ public class FriendlyTimeSince extends TextView {
         }
 
         if (value == 1) {
-            return "About " + (noun.charAt(0) == 'h' ? "n " : " ") + noun + " ago";
+            return "About a" + (noun.charAt(0) == 'h' ? "n " : " ") + noun + " ago";
         } else {
             return Long.toString(value) + " " + noun + "s ago";
         }
