@@ -26,6 +26,7 @@ import java.util.TimerTask;
 
 import io.khe.kenthackenough.Config;
 import io.khe.kenthackenough.GCM.GcmListener;
+import io.khe.kenthackenough.GCM.GcmRegisterer;
 import io.khe.kenthackenough.KHEApp;
 
 /**
@@ -45,6 +46,7 @@ public class LiveFeedManager {
     private Context applicationContext;
 
     private Socket socket;
+    private String url;
 
 
     /**
@@ -53,6 +55,7 @@ public class LiveFeedManager {
      * @param checkDelay The time between requests to the server
      */
     public LiveFeedManager(String url, int checkDelay, final Context context) {
+        this.url = url;
         listMessages = new MessageRequest(Request.Method.GET, url, null, new Response.Listener<List<Message>>() {
             @Override
             public void onResponse(List<Message> messagesFromServer) {
@@ -86,76 +89,36 @@ public class LiveFeedManager {
         listMessages.setTag("listMessages");
         this.checkDelay = checkDelay;
         uiThreadHandler = new Handler(context.getMainLooper());
-
-        try {
-            socket = IO.socket(url);
-        } catch (URISyntaxException e) {
-            Log.e("KHE 2015", "API url " + url + " failed");
-        }
-
-        socket.on("create", new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                JSONObject json = (JSONObject) args[0];
-                try {
-                    final Message newMessage = Message.getFromJSON(json);
-                    uiThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            createMessage(newMessage);
-                        }
-                    });
-                } catch (JSONException e) {
-                    Log.e("KHE2015", "failed to parse create message", e);
-                }
-
-            }
-        });
-
-        socket.on("delete", new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                final JSONObject json = (JSONObject) args[0];
-                try {
-                    final String uuidString = json.getString("_id");
-                    uiThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            deleteMessage(uuidString);
-                        }
-                    });
-
-                } catch (JSONException e) {
-                    Log.e("KHE2015", "failed to parse delete message", e);
-                }
-            }
-        });
-
-        socket.on("update", new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                try {
-                    final Message newMessage = Message.getFromJSON((JSONObject) args[0]);
-                    uiThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateMessage(newMessage);
-                        }
-                    });
-                } catch (JSONException e) {
-                    Log.e("KHE2015", "failed to parse update message", e);
-                }
-            }
-        });
     }
     /**
      * Starts a repeated request to the server to fetch all messages
      */
     public void start() {
-        //socket.connect();
+        setUpGcm();
 
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                update();
+
+                // register with socket.io if GCM breaks for some reason
+                if (!GcmRegisterer.working) {
+                    if (socket == null || !socket.connected()) {
+                        Log.w(Config.DEBUG_TAG, "GCM failed so falling back on socket.io");
+                        setSocketIO();
+                        socket.connect();
+                    }
+                } else {
+                    if(socket != null && socket.connected()) {
+                        Log.w(Config.DEBUG_TAG, "GCM came back so returning to it");
+                        socket.disconnect();
+                    }
+                }
+            }
+
+        }, 0, checkDelay);
+    }
+
+    private void setUpGcm() {
         GcmListener.addListener(applicationContext, "messages", "create", new GcmListener.GcmMessageListener() {
             @Override
             public void onReceive(Bundle message) {
@@ -190,16 +153,74 @@ public class LiveFeedManager {
                 }
             }
         });
-
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                update();
-            }
-
-        }, 0, checkDelay);
     }
 
-    private void update() {
+    private void setSocketIO() {
+        try {
+            socket = IO.socket(url);
+
+            socket.on("create", new Emitter.Listener() {
+
+                @Override
+                public void call(Object... args) {
+                    JSONObject json = (JSONObject) args[0];
+                    try {
+                        final Message newMessage = Message.getFromJSON(json);
+                        uiThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                createMessage(newMessage);
+                            }
+                        });
+                    } catch (JSONException e) {
+                        Log.e("KHE2015", "failed to parse create message", e);
+                    }
+
+                }
+            });
+
+            socket.on("delete", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    final JSONObject json = (JSONObject) args[0];
+                    try {
+                        final String uuidString = json.getString("_id");
+                        uiThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                deleteMessage(uuidString);
+                            }
+                        });
+
+                    } catch (JSONException e) {
+                        Log.e("KHE2015", "failed to parse delete message", e);
+                    }
+                }
+            });
+
+            socket.on("update", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    try {
+                        final Message newMessage = Message.getFromJSON((JSONObject) args[0]);
+                        uiThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateMessage(newMessage);
+                            }
+                        });
+                    } catch (JSONException e) {
+                        Log.e("KHE2015", "failed to parse update message", e);
+                    }
+                }
+            });
+        } catch (URISyntaxException e) {
+            Log.e(Config.DEBUG_TAG, "Failed to connect to " + url + " with socket.io");
+        }
+
+    }
+
+        private void update() {
         KHEApp.queue.add(listMessages);
     }
 
@@ -244,7 +265,7 @@ public class LiveFeedManager {
         newMessagesListeners.add(listener);
     }
 
-    public boolean removeNewMessagesLister(NewMessagesListener listener) {
+    public boolean removeNewMessagesListener(NewMessagesListener listener) {
         return newMessagesListeners.remove(listener);
     }
 
@@ -278,7 +299,7 @@ public class LiveFeedManager {
 
     public interface DeletedMessageListener {
         /**
-         * Called when messages are deleted via socket.io.
+         * Called when messages are deleted via socket.io or GCM.
          *
          * @param deletedMessage the message that was deleted
          * @param allMessages a list of all messages ordered by time sent with the newest first
@@ -288,7 +309,7 @@ public class LiveFeedManager {
 
     public interface UpdatedMessageListener {
         /**
-         * Called when an message is edited via socket.io
+         * Called when an message is edited via socket.io or GCM.
          *
          * @param updatedMessage the message that was edited
          * @param allMessages a list of all messages ordered by time sent with the newest first

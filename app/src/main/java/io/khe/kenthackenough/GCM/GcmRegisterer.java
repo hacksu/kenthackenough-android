@@ -31,6 +31,8 @@ import io.khe.kenthackenough.Config;
 import io.khe.kenthackenough.R;
 
 public class GcmRegisterer extends IntentService {
+    public static boolean working = true;
+
 
     HttpClient httpClient = new DefaultHttpClient();
 
@@ -77,6 +79,7 @@ public class GcmRegisterer extends IntentService {
             sharedPreferences.edit().putBoolean("Registered", false).apply();
             Log.e(Config.DEBUG_TAG, "failed to register", e);
         }
+        working = sharedPreferences.getBoolean("Registered", false);
     }
 
     private void subscribeToTopic(String token, String topic) throws IOException {
