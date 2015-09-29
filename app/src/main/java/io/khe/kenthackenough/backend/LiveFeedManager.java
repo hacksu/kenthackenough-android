@@ -49,7 +49,7 @@ public class LiveFeedManager {
 
     /**
      * Standard constructor for a LiveFeedManager (does not start it pulling)
-     * @param url The url for the api including the protocol
+     * @param url The url for the API including the protocol
      * @param checkDelay The time between requests to the server
      */
     public LiveFeedManager(String url, int checkDelay, final Context context) {
@@ -67,9 +67,8 @@ public class LiveFeedManager {
                     if (message.getCreated().getTime() > newestSaved) {
                         newMessages.add(message);
                     } else {
-                        break; // because the list is sorted after the first new message there are no more
+                        break; // because the list is sorted, after the first old message there are no more
                     }
-
                 }
 
                 messages = messagesFromServer;
@@ -104,13 +103,7 @@ public class LiveFeedManager {
                     uiThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            messages.add(0, newMessage);
-                            List<Message> newMessages = new  ArrayList<Message>(1);
-
-                            newMessages.add(newMessage);
-                            for (NewMessagesListener listener : newMessagesListeners) {
-                                listener.newMessagesAdded(newMessages, messages);
-                            }
+                            createMessage(newMessage);
                         }
                     });
                 } catch (JSONException e) {
@@ -123,21 +116,13 @@ public class LiveFeedManager {
         socket.on("delete", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                JSONObject json = (JSONObject) args[0];
+                final JSONObject json = (JSONObject) args[0];
                 try {
-                    String uuidString = json.getString("_id");
-                    final Long[] id = new Long[2];
-                    id[0] = Long.decode('#' + uuidString.substring(0, 12));
-                    id[1] = Long.decode('#' + uuidString.substring(12));
-
+                    final String uuidString = json.getString("_id");
                     uiThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            Message.getByID(id).closeNotification(context);
-                            messages.remove(new Message(null, "", id));
-                            for (DeletedMessageListener listener : deletedMessageListeners) {
-                                listener.messageDeleted(Message.getByID(id), messages);
-                            }
+                            deleteMessage(uuidString);
                         }
                     });
 
@@ -156,13 +141,7 @@ public class LiveFeedManager {
                     uiThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            messages.remove(newMessage);
-                            messages.add(newMessage);
-                            Collections.sort(messages);
-
-                            for (UpdatedMessageListener listener : updatedMessageListeners) {
-                                listener.messageUpdated(newMessage, messages);
-                            }
+                            updateMessage(newMessage);
                         }
                     });
                 } catch (JSONException e) {
@@ -177,11 +156,38 @@ public class LiveFeedManager {
     public void start() {
         //socket.connect();
 
-        GcmListener.addListener(applicationContext, "messages", new GcmListener.GcmMessageListener() {
+        GcmListener.addListener(applicationContext, "messages", "create", new GcmListener.GcmMessageListener() {
             @Override
             public void onReceive(Bundle message) {
-                Log.d(Config.DEBUG_TAG, "Received a message from GCM");
-                update();
+                try {
+                    Message newMessage = Message.getFromJSON(new JSONObject(message.getString("document")));
+                    createMessage(newMessage);
+                } catch (JSONException e) {
+                    Log.e(Config.DEBUG_TAG, "failed to parse create message", e);
+                }
+            }
+        });
+
+        GcmListener.addListener(applicationContext, "messages", "delete", new GcmListener.GcmMessageListener() {
+            @Override
+            public void onReceive(Bundle message) {
+                try {
+                    deleteMessage(new JSONObject(message.getString("document")).getString("_id"));
+                } catch (JSONException e) {
+                    Log.e(Config.DEBUG_TAG, "failed to parse delete message", e);
+                }
+            }
+        });
+
+        GcmListener.addListener(applicationContext, "messages", "update", new GcmListener.GcmMessageListener() {
+            @Override
+            public void onReceive(Bundle message) {
+                try {
+                    Message updateMessage = Message.getFromJSON(new JSONObject(message.getString("document")));
+                    updateMessage(updateMessage);
+                } catch (JSONException e) {
+                    Log.e(Config.DEBUG_TAG, "failed to parse update message", e);
+                }
             }
         });
 
@@ -197,12 +203,36 @@ public class LiveFeedManager {
         KHEApp.queue.add(listMessages);
     }
 
-    /**
-     * Stops the requests started by start()
-     */
-    public void halt() {
-        timer.purge();
-        KHEApp.queue.cancelAll("listMessages");
+    private void createMessage(Message message) {
+        messages.add(0, message);
+        List<Message> newMessages = new  ArrayList<Message>(1);
+
+        newMessages.add(message);
+        for (NewMessagesListener listener : newMessagesListeners) {
+            listener.newMessagesAdded(newMessages, messages);
+        }
+    }
+
+    private void deleteMessage(String uuidString) {
+        final Long[] id = new Long[2];
+        id[0] = Long.decode('#' + uuidString.substring(0, 12));
+        id[1] = Long.decode('#' + uuidString.substring(12));
+
+        Message.getByID(id).closeNotification(applicationContext);
+        messages.remove(new Message(null, "", id));
+        for (DeletedMessageListener listener : deletedMessageListeners) {
+            listener.messageDeleted(Message.getByID(id), messages);
+        }
+    }
+
+    private void updateMessage(Message message) {
+        messages.remove(message);
+        messages.add(message);
+        Collections.sort(messages);
+
+        for (UpdatedMessageListener listener : updatedMessageListeners) {
+            listener.messageUpdated(message, messages);
+        }
     }
 
     /**
