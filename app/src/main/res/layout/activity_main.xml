@@ -12,7 +12,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/accent_peach">
+            android:background="@color/dark_grey"
+            android:theme="@style/ThemeOverlay.KHE.ActionBar">
         </android.support.v7.widget.Toolbar>
         <FrameLayout
             android:layout_below="@+id/toolbar"
@@ -23,12 +24,12 @@
     </RelativeLayout>
     <!-- The navigation drawer -->
     <ListView android:id="@+id/left_drawer"
-        android:paddingTop="0dp"
+        android:paddingTop="10dp"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-        android:background="@color/accent_gray"/>
+        android:background="@color/dark_grey"/>
 </android.support.v4.widget.DrawerLayout>
