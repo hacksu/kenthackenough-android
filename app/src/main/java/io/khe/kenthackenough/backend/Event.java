@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
@@ -42,7 +43,7 @@ public class Event implements Comparable<Event>, Serializable{
     private String type;
     private String group;
     private String location;
-    private Long[] id;
+    private String id;
 
     //currently unused
     private Date notifyOn; // if null ignored
@@ -56,7 +57,7 @@ public class Event implements Comparable<Event>, Serializable{
     private static final int WARNING = 10 * 60 * 1000; // amount of time in milliseconds to warn the user before an event
 
     public Event(Date start, Date end, String title, String type, String group, String description,
-                 String location, Long[] id, boolean notify) {
+                 String location, String id, boolean notify) {
         startCal.setTime(start);
         endCal.setTime(end);
         this.notify = notify;
@@ -75,7 +76,7 @@ public class Event implements Comparable<Event>, Serializable{
 
     }
 
-    public Event(Long[] id) {
+    public Event(String id) {
         this.id = id;
     }
 
@@ -90,11 +91,8 @@ public class Event implements Comparable<Event>, Serializable{
         boolean notify = json.getBoolean("notify");
 
         String uuidString = json.getString("_id");
-        Long[] id = new Long[2];
-        id[0] = Long.decode('#' + uuidString.substring(0, 12));
-        id[1] = Long.decode('#' + uuidString.substring(12));
 
-        return new Event(start, end, title, type, group, description, location, id, notify);
+        return new Event(start, end, title, type, group, description, location, uuidString, notify);
     }
 
     public Calendar getStart() {
@@ -185,7 +183,7 @@ public class Event implements Comparable<Event>, Serializable{
 
     @Override
     public int hashCode() {
-        return id[1].intValue(); // todo better hash
+        return id.hashCode(); // todo better hash
     }
 
 
@@ -195,17 +193,16 @@ public class Event implements Comparable<Event>, Serializable{
             return super.equals(other);
         }
 
-        Event otherEvent = (Event) other;
-        return this.id[0].equals(otherEvent.id[0]) && this.id[1].equals(otherEvent.id[1]);
+        return this.id.equals(((Event) other).id);
 
     }
 
     @Override
-    public int compareTo(Event another) {
+    public int compareTo(@NonNull Event another) {
         return this.startCal.compareTo(another.startCal);
     }
 
-    public Long[] getID() {
-        return id.clone();
+    public String getID() {
+        return id;
     }
 }

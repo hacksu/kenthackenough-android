@@ -15,6 +15,7 @@ public class FriendlyTimeSince extends TextView {
     private long time = System.currentTimeMillis();
     private Handler timer = new Handler();
     private final FriendlyTimeSince self = this;
+
     private Runnable updateMessage = new Runnable() {
         @Override
         public void run() {

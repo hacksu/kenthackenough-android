@@ -36,7 +36,7 @@ public class EventNotificationPoster  extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.i("KHE 2015", "triggering notification");
 
-        Long[] eventID = (Long[]) intent.getSerializableExtra("event");
+        String eventID = intent.getStringExtra("event");
         Event idOnly = new Event(eventID);
         KHEApp app = KHEApp.self;
         Event event = null;
@@ -49,7 +49,7 @@ public class EventNotificationPoster  extends BroadcastReceiver {
 
         // make sure we found the event possible reasons we wouldn't include it no longer existing
         if (event == null) {
-            Log.w("KHE 2015", "event for id (" + eventID.toString() + ") not found by EventNotificationPoster");
+            Log.w("KHE 2015", "event for id (" + eventID + ") not found by EventNotificationPoster");
             return;
         }
 

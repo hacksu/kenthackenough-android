@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.SpannableString;
@@ -34,11 +35,11 @@ public class Message implements Comparable<Message> {
     private String message;
     private SpannableString formatted;
     private static int nextNotificationID;
-    private Long[] id;
+    private String id; // UUID actually hex, but probably not worth storing as such
     private int notificationId = -1;
-    private static Map<List<Long>, Message> idToMessage = new HashMap<>();
+    private static Map<String, Message> idToMessage = new HashMap<>();
 
-    public Message(Date created, String message, Long[] id) {
+    public Message(Date created, String message, String id) {
         this.created = created;
         this.message = message;
 
@@ -46,20 +47,18 @@ public class Message implements Comparable<Message> {
         formatted = Utilities.getSpannableFromHTML(message);
 
         this.id = id;
-        idToMessage.put(Arrays.asList(id), this);
+        idToMessage.put(id, this);
     }
 
     public static Message getFromJSON(JSONObject json) throws JSONException {
         String htmlMessage = Processor.process(json.getString("text"));
         String uuidString = json.getString("_id");
-        Long[] id = new Long[2];
-        id[0] = Long.decode('#' + uuidString.substring(0, 12));
-        id[1] = Long.decode('#' + uuidString.substring(12));
-        return new Message(new DateTime(json.getString("created")).toDate(), htmlMessage, id);
+
+        return new Message(new DateTime(json.getString("created")).toDate(), htmlMessage, uuidString);
     }
 
-    public static Message getByID(Long[] id) {
-        return idToMessage.get(Arrays.asList(id));
+    public static Message getByID(String id) {
+        return idToMessage.get(id);
     }
 
     public Date getCreated() {
@@ -77,7 +76,7 @@ public class Message implements Comparable<Message> {
 
     @Override
     public int hashCode() {
-        return id[1].intValue(); // todo better hash
+        return id.hashCode(); // todo better hash
     }
 
 
@@ -87,13 +86,11 @@ public class Message implements Comparable<Message> {
             return super.equals(other);
         }
 
-        Message otherMessage = (Message) other;
-        return this.id[0].equals(otherMessage.id[0]) && this.id[1].equals(otherMessage.id[1]);
-
+        return id.equals(((Message) other).id);
     }
 
     @Override
-    public int compareTo(Message another) {
+    public int compareTo(@NonNull Message another) {
         return this.created.compareTo(another.created) * -1;
     }
 
@@ -130,7 +127,7 @@ public class Message implements Comparable<Message> {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.cancel("messages" , notificationId);
-        System.out.println("was found for id:" +idToMessage.get(Arrays.asList(id)).message);
+        System.out.println("was found for id:" +idToMessage.get(id).message);
 
 
 

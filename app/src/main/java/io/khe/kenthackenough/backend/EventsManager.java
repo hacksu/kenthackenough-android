@@ -15,7 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -203,6 +205,16 @@ public class EventsManager {
         }
     }
 
+    public Event getNextEvent() {
+        Long now = System.currentTimeMillis();
+        for(Event event: events) {
+            if(event.getStart().getTime().getTime() > now) {
+                return event;
+            }
+        }
+        return null;
+    }
+
     private void createEvent(Event newEvent) {
         events.add(0, newEvent);
         for (EventsUpdateListener listener : updateListeners) {
@@ -211,11 +223,8 @@ public class EventsManager {
     }
 
     private void deleteEvent(String uuidString) {
-        final Long[] id = new Long[2];
-        id[0] = Long.decode('#' + uuidString.substring(0, 12));
-        id[1] = Long.decode('#' + uuidString.substring(12));
 
-        events.remove(new Event(id));
+        events.remove(new Event(uuidString));
         for (EventsUpdateListener listener : updateListeners) {
             listener.eventsFetched(events);
         }

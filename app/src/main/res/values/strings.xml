@@ -14,5 +14,6 @@
     </string-array>
 
     <string name="title_activity_dashboard_fragment">DashboardFragment</string>
+    <string name="KHE">Kent Hack Enough</string>
 
 </resources>
