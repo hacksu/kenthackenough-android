@@ -7,9 +7,11 @@
     android:id="@+id/text"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
+    android:paddingBottom="15dp"
+    android:paddingTop="15dp"
     android:textColor="@color/main_white"
     android:textStyle="normal"
-    android:textSize="40sp"
+    android:textSize="30sp"
     android:singleLine="true"
     android:background="?android:attr/activatedBackgroundIndicator"
     />
