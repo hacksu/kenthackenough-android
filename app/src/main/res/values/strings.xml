@@ -9,7 +9,7 @@
     <string-array name="views">
         <item>Dashboard</item>
         <item>Updates</item>
-        <item>Calender</item>
+        <item>Calendar</item>
         <item>Links</item>
     </string-array>
 

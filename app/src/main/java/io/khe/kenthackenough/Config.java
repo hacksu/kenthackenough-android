@@ -7,6 +7,7 @@ package io.khe.kenthackenough;
 public class Config{
     // the url of the api
     public static final String API_URL = "http://api.khe.pdilyard.com/v1.0";
+    public static final String INFO_URL = "https://khe.io/info";
     // client id, only used in authentication
     public static final String API_CLIENT = "isaacpark";
     public static final String DEBUG_TAG = "KHE 2015";
