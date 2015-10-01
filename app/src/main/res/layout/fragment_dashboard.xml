@@ -21,7 +21,6 @@
             android:layout_marginLeft="30dp"
             android:layout_marginStart="30dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
             android:text="Next Event"
             android:textColor="@color/red" />
 
@@ -51,7 +50,6 @@
             android:layout_marginLeft="30dp"
             android:layout_marginStart="30dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
             android:text="Newest Message"
             android:textColor="@color/red" />
 
