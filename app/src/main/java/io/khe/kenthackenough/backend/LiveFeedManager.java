@@ -243,7 +243,7 @@ public class LiveFeedManager {
 
         messages.remove(toDelete);
         for (DeletedMessageListener listener : deletedMessageListeners) {
-            listener.messageDeleted(Message.getByID(uuidString), messages);
+            listener.messageDeleted(toDelete, messages);
         }
     }
 

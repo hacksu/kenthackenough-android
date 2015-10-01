@@ -48,14 +48,21 @@ public class DashboardFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
         message = view.findViewById(R.id.newest_message);
         event = view.findViewById(R.id.next_event);
+
+        message.setVisibility(View.INVISIBLE);
+        event.setVisibility(View.INVISIBLE);
+
         if (messagesManager.messages.size() > 0) {
             getViewForMessage(messagesManager.messages.get(0), message);
+            message.setVisibility(View.VISIBLE);
+
         }
 
 
         Event nextEvent = eventsManager.getNextEvent();
         if (nextEvent != null) {
             getViewForEvent(nextEvent, event);
+            event.setVisibility(View.VISIBLE);
         }
         registerMessagesManagerListeners();
         registerEventsManagerListeners();
