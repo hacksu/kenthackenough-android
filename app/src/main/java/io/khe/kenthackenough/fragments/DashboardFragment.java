@@ -27,8 +27,8 @@ public class DashboardFragment extends Fragment {
     LiveFeedManager messagesManager;
     EventsManager eventsManager;
 
-    FrameLayout message;
-    FrameLayout event;
+    View message;
+    View event;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,19 +46,16 @@ public class DashboardFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        message = (FrameLayout) view.findViewById(R.id.newest_message);
-        event = (FrameLayout) view.findViewById(R.id.next_event);
-        message.removeAllViews();
-
+        message = view.findViewById(R.id.newest_message);
+        event = view.findViewById(R.id.next_event);
         if (messagesManager.messages.size() > 0) {
-            message.addView(getViewForMessage(messagesManager.messages.get(0), null));
+            getViewForMessage(messagesManager.messages.get(0), message);
         }
 
 
-        event.removeAllViews();
         Event nextEvent = eventsManager.getNextEvent();
         if (nextEvent != null) {
-            event.addView(getViewForEvent(nextEvent, null));
+            getViewForEvent(nextEvent, event);
         }
         registerMessagesManagerListeners();
         registerEventsManagerListeners();
@@ -71,25 +68,25 @@ public class DashboardFragment extends Fragment {
         messagesManager.addNewMessagesListener(new LiveFeedManager.NewMessagesListener() {
             @Override
             public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
-                message.removeAllViews();
-                message.addView(getViewForMessage(messagesManager.messages.get(0), null));
+                message.setVisibility(View.VISIBLE);
+                getViewForMessage(messagesManager.messages.get(0), message);
             }
         });
         messagesManager.addDeleteMessageListener(new LiveFeedManager.DeletedMessageListener() {
             @Override
             public void messageDeleted(Message deletedMessage, List<Message> allMessages) {
-                message.removeAllViews();
-
                 if (messagesManager.messages.size() > 0) {
-                    message.addView(getViewForMessage(messagesManager.messages.get(0), null));
+                    getViewForMessage(messagesManager.messages.get(0), message);
+                    message.setVisibility(View.VISIBLE);
+                } else {
+                    message.setVisibility(View.INVISIBLE);
                 }
             }
         });
         messagesManager.addUpdateMessageListener(new LiveFeedManager.UpdatedMessageListener() {
             @Override
             public void messageUpdated(Message updatedMessage, List<Message> allMessages) {
-                message.removeAllViews();
-                message.addView(getViewForMessage(messagesManager.messages.get(0), null));
+                getViewForMessage(messagesManager.messages.get(0), message);
             }
         });
     }
@@ -98,10 +95,12 @@ public class DashboardFragment extends Fragment {
         eventsManager.addListener(new EventsManager.EventsUpdateListener() {
             @Override
             public void eventsFetched(List<Event> events) {
-                event.removeAllViews();
                 Event nextEvent = eventsManager.getNextEvent();
                 if (nextEvent != null) {
-                    event.addView(getViewForEvent(nextEvent, null));
+                    getViewForEvent(nextEvent, event);
+                    event.setVisibility(View.VISIBLE);
+                } else {
+                    event.setVisibility(View.INVISIBLE);
                 }
             }
         });
