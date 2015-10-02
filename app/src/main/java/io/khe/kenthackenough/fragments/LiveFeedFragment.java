@@ -41,13 +41,13 @@ public class LiveFeedFragment extends Fragment {
     public void onResume() {
         super.onResume();
         notificationManager.cancelAll();
-        mActive = true;
+        //mActive = true;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mActive = false;
+        //mActive = false;
     }
 
     @Override
