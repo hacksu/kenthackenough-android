@@ -20,7 +20,7 @@ import io.khe.kenthackenough.fragments.LiveFeedFragment;
 public class MainActivity extends AppCompatActivity {
     public LiveFeedManager liveFeedManager;
 
-    private String[] mViewTitles;
+    private static String[] mViewTitles;
     ViewPager viewPager;
 
     private int mCurrentView = 0;
@@ -50,37 +50,26 @@ public class MainActivity extends AppCompatActivity {
 
 
         tabBar = (TabLayout) findViewById(R.id.tab_bar);
+        tabBar.setupWithViewPager(viewPager);
 
-        for(String title: mViewTitles) {
-            TabLayout.Tab newTab = tabBar.newTab();
-            newTab.setText(title);
-            tabBar.addTab(newTab);
-        }
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabBar));
+            @Override
+            public void onPageSelected(int position) {
+                selectView(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
 
         // Switch to the saved view
         mCurrentView = getIntent().getIntExtra("view", mCurrentView);
         Log.i(Config.DEBUG_TAG, "main activity loaded and switching to " + mCurrentView);
         selectView(mCurrentView);
         viewPager.setCurrentItem(mCurrentView);
-
-        tabBar.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                selectView(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                selectView(tab.getPosition());
-            }
-        });
 
         getSupportActionBar().setHomeButtonEnabled(true);
     }
@@ -102,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectView(int view) {
-        viewPager.setCurrentItem(view);
         setTitle(mViewTitles[view]);
 
 
@@ -129,6 +117,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             return views[position];
+        }
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mViewTitles[position];
         }
 
         @Override
