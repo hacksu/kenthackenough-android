@@ -1,7 +1,7 @@
 package io.khe.kenthackenough;
 
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -21,10 +21,11 @@ public class MainActivity extends AppCompatActivity {
     public LiveFeedManager liveFeedManager;
 
     private static String[] mViewTitles;
-    ViewPager viewPager;
+    private ViewPager mViewPager;
+    private TabLayout mTabBar;
+    private AppBarLayout mAppBar;
 
     private int mCurrentView = 0;
-    private TabLayout tabBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,21 +41,24 @@ public class MainActivity extends AppCompatActivity {
         mViewTitles = getResources().getStringArray(R.array.views);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        mTabBar = (TabLayout) findViewById(R.id.tab_bar);
+        mAppBar = (AppBarLayout) findViewById(R.id.appBarLayout);
+
         setSupportActionBar(toolbar);
 
         Adapter adapter = new Adapter(getSupportFragmentManager());
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(4);
+        mViewPager.setAdapter(adapter);
+        mViewPager.setOffscreenPageLimit(4);
 
 
 
-        tabBar = (TabLayout) findViewById(R.id.tab_bar);
-        tabBar.setupWithViewPager(viewPager);
+        mTabBar.setupWithViewPager(mViewPager);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -62,14 +66,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
 
         // Switch to the saved view
         mCurrentView = getIntent().getIntExtra("view", mCurrentView);
         Log.i(Config.DEBUG_TAG, "main activity loaded and switching to " + mCurrentView);
         selectView(mCurrentView);
-        viewPager.setCurrentItem(mCurrentView);
+        mViewPager.setCurrentItem(mCurrentView);
 
         getSupportActionBar().setHomeButtonEnabled(true);
     }
@@ -93,7 +98,9 @@ public class MainActivity extends AppCompatActivity {
     private void selectView(int view) {
         setTitle(mViewTitles[view]);
 
-
+        if(view == 0 || view == 3) {
+            mAppBar.setExpanded(true);
+        }
         mCurrentView = view;
     }
     @Override
