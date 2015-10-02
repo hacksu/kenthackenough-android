@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,9 +29,6 @@ public class MainActivity extends ActionBarActivity {
 
     private String[] mViewTitles;
     private Fragment[] mViews;
-    private DrawerLayout mViewDrawerLayout;
-    private ListView mViewDrawerList;
-    private ActionBarDrawerToggle mDrawerToggle;
 
     private int mCurrentView = 0;
 
@@ -49,11 +47,6 @@ public class MainActivity extends ActionBarActivity {
 
 
         mViewTitles = getResources().getStringArray(R.array.views);
-        mViewDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mViewDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        mViewDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.text_list_item, mViewTitles));
-        mViewDrawerList.setOnItemClickListener(new ViewDrawerClickListener());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -61,16 +54,40 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = getIntent();
         mCurrentView = intent.getIntExtra("view", mCurrentView);
 
+
+
+
+
         Log.i(Config.DEBUG_TAG, "main activity loaded and switching to " + mCurrentView);
 
+        TabLayout tabBar = (TabLayout) findViewById(R.id.tab_bar);
+
+        for(String title: mViewTitles) {
+            TabLayout.Tab newTab = tabBar.newTab();
+            newTab.setText(title);
+            tabBar.addTab(newTab);
+        }
 
         selectView(mCurrentView);
+        tabBar.getTabAt(mCurrentView).select();
 
-        // todo add actual icons here built for purpose
-        mDrawerToggle = new ActionBarDrawerToggle(this, mViewDrawerLayout, R.drawable.clover, R.drawable.clover);
-        mViewDrawerLayout.setDrawerListener(mDrawerToggle);
+        tabBar.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                selectView(tab.getPosition());
+            }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                selectView(tab.getPosition());
+            }
+        });
+
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
@@ -85,34 +102,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_dashboard, menu);
-        return true;
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("active_view", mCurrentView);
@@ -121,20 +110,14 @@ public class MainActivity extends ActionBarActivity {
     private void selectView(int view) {
         FragmentManager fragmentManager = getFragmentManager();
 
-        Fragment fragment = fragmentManager.findFragmentById(R.id.container);
-        // we need to check the view is already loaded and if so just re-use it.
-        if (fragment != null && fragment.getClass().equals(mViews[view].getClass())) {
-            mViews[view] = fragment;
-        } else {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, mViews[view])
-                    .commit();
-        }
+        Log.d(Config.DEBUG_TAG, "Set fragment to " + view + " so fragment " + mViews[view].getClass());
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, mViews[view])
+                .commit();
 
         setTitle(mViewTitles[view]);
-        mViewDrawerLayout.closeDrawers();
 
-        mViewDrawerList.setItemChecked(view, true);
         mCurrentView = view;
     }
     @Override
@@ -142,11 +125,4 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setTitle(title);
     }
 
-    private class ViewDrawerClickListener implements ListView.OnItemClickListener {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectView(position);
-        }
-    }
 }

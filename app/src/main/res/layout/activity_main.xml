@@ -15,21 +15,19 @@
             android:background="@color/dark_grey"
             android:theme="@style/ThemeOverlay.KHE.ActionBar">
         </android.support.v7.widget.Toolbar>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_bar"
+            android:layout_below="@id/toolbar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/dark_grey"
+            style="@style/TabLayoutTheme"/>
+
         <FrameLayout
-            android:layout_below="@+id/toolbar"
+            android:layout_below="@+id/tab_bar"
             android:id="@+id/container"
             android:layout_width="match_parent" android:layout_height="match_parent"
             tools:context=".dashboard"
             tools:ignore="MergeRootFrame"/>
     </RelativeLayout>
-    <!-- The navigation drawer -->
-    <ListView android:id="@+id/left_drawer"
-        android:paddingTop="10dp"
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="@color/dark_grey"/>
 </android.support.v4.widget.DrawerLayout>
