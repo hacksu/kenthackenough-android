@@ -58,6 +58,9 @@ public class Utilities {
                 }
             }
         }
+
+        result = (SpannableString) result.subSequence(0, result.length() - 2); // remove double \n
+
         return result;
     }
 
