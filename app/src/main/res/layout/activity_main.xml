@@ -23,9 +23,9 @@
             android:background="@color/dark_grey"
             style="@style/TabLayoutTheme"/>
 
-        <FrameLayout
+        <android.support.v4.view.ViewPager
             android:layout_below="@+id/tab_bar"
-            android:id="@+id/container"
+            android:id="@+id/view_pager"
             android:layout_width="match_parent" android:layout_height="match_parent"
             tools:context=".dashboard"
             tools:ignore="MergeRootFrame"/>

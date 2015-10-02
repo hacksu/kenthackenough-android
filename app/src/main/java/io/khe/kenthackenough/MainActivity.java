@@ -1,21 +1,14 @@
 package io.khe.kenthackenough;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import io.khe.kenthackenough.backend.LiveFeedManager;
 import io.khe.kenthackenough.fragments.AboutFragment;
@@ -24,20 +17,18 @@ import io.khe.kenthackenough.fragments.EventsFragment;
 import io.khe.kenthackenough.fragments.LiveFeedFragment;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
     public LiveFeedManager liveFeedManager;
 
     private String[] mViewTitles;
-    private Fragment[] mViews;
+    ViewPager viewPager;
 
     private int mCurrentView = 0;
+    private TabLayout tabBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mViews = getPanes();
-
 
         if (savedInstanceState != null) {
             mCurrentView = savedInstanceState.getInt("active_view");
@@ -51,16 +42,14 @@ public class MainActivity extends ActionBarActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Intent intent = getIntent();
-        mCurrentView = intent.getIntExtra("view", mCurrentView);
+        Adapter adapter = new Adapter(getSupportFragmentManager());
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(4);
 
 
 
-
-
-        Log.i(Config.DEBUG_TAG, "main activity loaded and switching to " + mCurrentView);
-
-        TabLayout tabBar = (TabLayout) findViewById(R.id.tab_bar);
+        tabBar = (TabLayout) findViewById(R.id.tab_bar);
 
         for(String title: mViewTitles) {
             TabLayout.Tab newTab = tabBar.newTab();
@@ -68,8 +57,13 @@ public class MainActivity extends ActionBarActivity {
             tabBar.addTab(newTab);
         }
 
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabBar));
+
+        // Switch to the saved view
+        mCurrentView = getIntent().getIntExtra("view", mCurrentView);
+        Log.i(Config.DEBUG_TAG, "main activity loaded and switching to " + mCurrentView);
         selectView(mCurrentView);
-        tabBar.getTabAt(mCurrentView).select();
+        viewPager.setCurrentItem(mCurrentView);
 
         tabBar.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -108,21 +102,39 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void selectView(int view) {
-        FragmentManager fragmentManager = getFragmentManager();
-
-        Log.d(Config.DEBUG_TAG, "Set fragment to " + view + " so fragment " + mViews[view].getClass());
-
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, mViews[view])
-                .commit();
-
+        viewPager.setCurrentItem(view);
         setTitle(mViewTitles[view]);
+
 
         mCurrentView = view;
     }
     @Override
     public void setTitle(CharSequence title) {
         getSupportActionBar().setTitle(title);
+    }
+
+
+    public static class Adapter extends FragmentPagerAdapter{
+
+        Fragment[] views  = new Fragment[4];
+
+        public Adapter(android.support.v4.app.FragmentManager fm) {
+            super(fm);
+            views[0] = new DashboardFragment();
+            views[1] = new LiveFeedFragment();
+            views[2] = new EventsFragment();
+            views[3] = new AboutFragment();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return views[position];
+        }
+
+        @Override
+        public int getCount() {
+            return views.length;
+        }
     }
 
 }
