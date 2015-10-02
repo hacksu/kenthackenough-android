@@ -96,7 +96,7 @@ public class EventsFragment extends Fragment {
         @Override
         public EventViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             View view = LayoutInflater.from(viewGroup.getContext()).
-                    inflate(R.layout.event, viewGroup, false);
+                    inflate(R.layout.events_item, viewGroup, false);
             return new EventViewHolder(view);
         }
 

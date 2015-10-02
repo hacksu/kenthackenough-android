@@ -108,7 +108,7 @@ public class LiveFeedManager {
                         socket.connect();
                     }
                 } else {
-                    if(socket != null && socket.connected()) {
+                    if (socket != null && socket.connected()) {
                         Log.w(Config.DEBUG_TAG, "GCM came back so returning to it");
                         socket.disconnect();
                     }
@@ -235,14 +235,15 @@ public class LiveFeedManager {
     }
 
     private void deleteMessage(String uuidString) {
-        final Long[] id = new Long[2];
-        id[0] = Long.decode('#' + uuidString.substring(0, 12));
-        id[1] = Long.decode('#' + uuidString.substring(12));
 
-        Message.getByID(id).closeNotification(applicationContext);
-        messages.remove(new Message(null, "", id));
+        Message toDelete = Message.getByID(uuidString);
+        if (toDelete != null) {
+            toDelete.closeNotification(applicationContext);
+        }
+
+        messages.remove(toDelete);
         for (DeletedMessageListener listener : deletedMessageListeners) {
-            listener.messageDeleted(Message.getByID(id), messages);
+            listener.messageDeleted(toDelete, messages);
         }
     }
 
