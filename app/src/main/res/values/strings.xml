@@ -7,9 +7,9 @@
     <string name="client">android</string>
 
     <string-array name="views">
-        <item>Dashboard</item>
+        <item>Dash</item>
         <item>Updates</item>
-        <item>Calendar</item>
+        <item>Events</item>
         <item>Links</item>
     </string-array>
 

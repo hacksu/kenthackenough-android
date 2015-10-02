@@ -1,7 +1,7 @@
 package io.khe.kenthackenough.fragments;
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,7 +31,11 @@ public class AboutFragment extends Fragment {
         mAboutWebView = (WebView) view.findViewById(R.id.about);
         WebSettings webSettings = mAboutWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        mAboutWebView.loadUrl(Config.INFO_URL);
+
+        // only navigate if we have to
+        if(!Config.INFO_URL.equals(mAboutWebView.getUrl())) {
+            mAboutWebView.loadUrl(Config.INFO_URL);
+        }
 
 
         AboutManager aboutManager = ((KHEApp) getActivity().getApplication()).aboutManager;
@@ -39,7 +43,7 @@ public class AboutFragment extends Fragment {
             @Override
             public void aboutUpdated(AboutManager.About about) {
                 Log.i(Config.DEBUG_TAG, "got response" + about.formatted);
-                mAboutWebView.loadUrl(Config.INFO_URL);
+                mAboutWebView.reload();
             }
         });
         return view;
