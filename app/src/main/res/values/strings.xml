@@ -8,8 +8,8 @@
 
     <string-array name="views">
         <item>Dash</item>
-        <item>Updates</item>
         <item>Events</item>
+        <item>Updates</item>
         <item>Links</item>
     </string-array>
 

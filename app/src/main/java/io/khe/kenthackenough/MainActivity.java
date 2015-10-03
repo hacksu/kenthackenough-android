@@ -116,8 +116,8 @@ public class MainActivity extends AppCompatActivity {
         public Adapter(android.support.v4.app.FragmentManager fm) {
             super(fm);
             views[0] = new DashboardFragment();
-            views[1] = new LiveFeedFragment();
-            views[2] = new EventsFragment();
+            views[1] = new EventsFragment();
+            views[2] = new LiveFeedFragment();
             views[3] = new AboutFragment();
         }
 
