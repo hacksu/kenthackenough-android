@@ -49,18 +49,6 @@ public class EventsManager {
      * @param checkDelay The time between requests to the server
      */
     public EventsManager(String url, int checkDelay, final Context context) {
-        listEvents = new EventsRequest(Request.Method.GET, url, null, new Response.Listener<List<Event>>() {
-            @Override
-            public void onResponse(List<Event> eventsFromServer) {
-                events = eventsFromServer;
-                for (EventsUpdateListener listener : updateListeners) {
-                    listener.eventsFetched(events);
-                }
-
-            }
-        });
-        // we aren't currently using this but it will allow us to remove these requests later if need
-        listEvents.setTag("listMessages");
         this.checkDelay = checkDelay;
 
         this.url = url;
@@ -73,6 +61,19 @@ public class EventsManager {
      * Starts a repeated request to the server to fetch all messages
      */
     public void start() {
+        listEvents = new EventsRequest(Request.Method.GET, url, null, new Response.Listener<List<Event>>() {
+            @Override
+            public void onResponse(List<Event> eventsFromServer) {
+                events = eventsFromServer;
+                for (EventsUpdateListener listener : updateListeners) {
+                    listener.eventsFetched(events);
+                }
+
+            }
+        });
+        // we aren't currently using this but it will allow us to remove these requests later if need
+        listEvents.setTag("listEvents");
+
         setUpGcm();
 
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -95,6 +96,14 @@ public class EventsManager {
             }
 
         }, 0, checkDelay);
+    }
+    public void halt() {
+        KHEApp.queue.cancelAll("listEvents");
+        timer.purge();
+        if(socket != null) {
+            socket.disconnect();
+        }
+        socket = null;
     }
 
     private void update() {

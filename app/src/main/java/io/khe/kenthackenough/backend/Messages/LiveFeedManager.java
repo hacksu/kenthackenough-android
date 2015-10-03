@@ -56,6 +56,16 @@ public class LiveFeedManager {
      */
     public LiveFeedManager(String url, int checkDelay, final Context context) {
         this.url = url;
+
+        applicationContext = context;
+
+        this.checkDelay = checkDelay;
+        uiThreadHandler = new Handler(context.getMainLooper());
+    }
+    /**
+     * Starts a repeated request to the server to fetch all messages
+     */
+    public void start() {
         listMessages = new MessageRequest(Request.Method.GET, url, null, new Response.Listener<List<Message>>() {
             @Override
             public void onResponse(List<Message> messagesFromServer) {
@@ -84,16 +94,8 @@ public class LiveFeedManager {
 
             }
         });
-
-        applicationContext = context;
         listMessages.setTag("listMessages");
-        this.checkDelay = checkDelay;
-        uiThreadHandler = new Handler(context.getMainLooper());
-    }
-    /**
-     * Starts a repeated request to the server to fetch all messages
-     */
-    public void start() {
+
         setUpGcm();
 
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -116,6 +118,14 @@ public class LiveFeedManager {
             }
 
         }, 0, checkDelay);
+    }
+
+    public void halt() {
+        if(socket != null) {
+            socket.disconnect();
+        }
+        KHEApp.queue.cancelAll("listMessages");
+        timer.purge();
     }
 
     private void setUpGcm() {

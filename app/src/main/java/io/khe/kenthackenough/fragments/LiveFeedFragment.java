@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
@@ -18,6 +19,8 @@ import java.util.List;
 import io.khe.kenthackenough.FriendlyTimeSince;
 import io.khe.kenthackenough.KHEApp;
 import io.khe.kenthackenough.R;
+import io.khe.kenthackenough.backend.Events.Event;
+import io.khe.kenthackenough.backend.Events.EventsManager;
 import io.khe.kenthackenough.backend.Messages.LiveFeedManager;
 import io.khe.kenthackenough.backend.Messages.Message;
 
@@ -28,6 +31,9 @@ import io.khe.kenthackenough.backend.Messages.Message;
 public class LiveFeedFragment extends Fragment {
     public static boolean mActive = false;
     NotificationManager notificationManager;
+    private SwipeRefreshLayout refresh;
+    private LiveFeedManager liveFeedManager;
+
     public LiveFeedFragment() {}
 
     @Override
@@ -60,7 +66,24 @@ public class LiveFeedFragment extends Fragment {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         messages.setLayoutManager(llm);
 
-        LiveFeedManager liveFeedManager = ((KHEApp) getActivity().getApplication()).liveFeedManager;
+        liveFeedManager = ((KHEApp) getActivity().getApplication()).liveFeedManager;
+        refresh = ((SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh));
+
+        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                liveFeedManager.halt();
+                liveFeedManager.start();
+            }
+        });
+        liveFeedManager.addNewMessagesListener(new LiveFeedManager.NewMessagesListener() {
+            @Override
+            public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
+                refresh.setRefreshing(false);
+
+            }
+        });
+
         messages.setAdapter(new LiveFeedAdapter(liveFeedManager));
         return view;
     }

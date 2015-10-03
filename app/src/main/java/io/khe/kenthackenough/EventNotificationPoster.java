@@ -14,24 +14,24 @@ import io.khe.kenthackenough.backend.Events.Event;
  */
 public class EventNotificationPoster  extends BroadcastReceiver {
 
-    private static int max_id = 0;
     /**
      * schedule allows for easy scheduling of a future event's notification
      * @param event the event to schedule
      */
-    public static int schedule(Context context, Event event, long time, long warning) {
+    public static PendingIntent schedule(Context context, Event event, long time, long warning) {
 
         if(time < System.currentTimeMillis()) {
-            return -1;
+            return null;
         }
 
         Intent intent = new Intent(context, EventNotificationPoster.class);
         intent.putExtra("event", event.getID());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, max_id, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.set(AlarmManager.RTC_WAKEUP, time - warning, pendingIntent);
-        return max_id++;
+        return pendingIntent;
     }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("KHE 2015", "triggering notification");

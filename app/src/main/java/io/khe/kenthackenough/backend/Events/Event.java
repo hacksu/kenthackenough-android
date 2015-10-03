@@ -20,7 +20,11 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
+import io.khe.kenthackenough.Config;
 import io.khe.kenthackenough.EventNotificationPoster;
 import io.khe.kenthackenough.KHEApp;
 import io.khe.kenthackenough.MainActivity;
@@ -49,7 +53,7 @@ public class Event implements Comparable<Event>, Serializable{
     private Date notifyOn; // if null ignored
     private String notificationMessage;
 
-    private int ScheduledNotificationID;
+    private static Map<String, PendingIntent> scheduledNotificationID = new HashMap<>();
 
     private int notificationId;
     private static int nextNotificationID = 0;
@@ -70,7 +74,14 @@ public class Event implements Comparable<Event>, Serializable{
         // schedule an event if we should notify
         if (notify) {
             Log.i("KHE2015", "scheduling notification");
-            EventNotificationPoster.schedule(KHEApp.self, this, getStart().getTimeInMillis(), WARNING);
+
+            PendingIntent oldIntent = scheduledNotificationID.get(id);
+            if(oldIntent != null) {
+                Log.i(Config.DEBUG_TAG, "cancled scheduled notification");
+                oldIntent.cancel();
+            }
+            scheduledNotificationID.put(id,
+                    EventNotificationPoster.schedule(KHEApp.self, this, getStart().getTimeInMillis(), WARNING));
         }
 
     }

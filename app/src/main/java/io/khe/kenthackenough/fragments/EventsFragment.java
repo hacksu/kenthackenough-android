@@ -3,11 +3,13 @@ package io.khe.kenthackenough.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ public class EventsFragment extends Fragment {
 
 
     private EventsManager eventsManager;
+    private SwipeRefreshLayout refresh;
     private boolean first = true;
 
     public EventsFragment() {
@@ -52,6 +55,23 @@ public class EventsFragment extends Fragment {
 
 
         eventsManager = ((KHEApp) getActivity().getApplication()).eventsManager;
+        refresh = ((SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh));
+
+        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                eventsManager.halt();
+                eventsManager.start();
+            }
+        });
+        eventsManager.addListener(new EventsManager.EventsUpdateListener() {
+            @Override
+            public void eventsFetched(List<Event> events) {
+                refresh.setRefreshing(false);
+            }
+        });
+
+
         EventsAdapter adapter = new EventsAdapter(eventsManager);
         events.setAdapter(adapter);
         if((savedInstanceState == null || savedInstanceState.getBoolean("new", first)) && first) {
