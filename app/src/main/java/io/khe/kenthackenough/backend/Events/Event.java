@@ -51,7 +51,6 @@ public class Event implements Comparable<Event>, Serializable{
 
     private int ScheduledNotificationID;
 
-    private Color color;
     private int notificationId;
     private static int nextNotificationID = 0;
     private static final int WARNING = 10 * 60 * 1000; // amount of time in milliseconds to warn the user before an event
@@ -175,10 +174,6 @@ public class Event implements Comparable<Event>, Serializable{
 
     public String getNotificationMessage() {
         return notificationMessage;
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     @Override
