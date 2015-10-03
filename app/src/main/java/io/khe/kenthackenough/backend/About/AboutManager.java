@@ -1,4 +1,4 @@
-package io.khe.kenthackenough.backend;
+package io.khe.kenthackenough.backend.About;
 
 import android.content.Context;
 import android.text.SpannableString;
@@ -22,6 +22,7 @@ import java.util.TimerTask;
 
 import io.khe.kenthackenough.Config;
 import io.khe.kenthackenough.KHEApp;
+import io.khe.kenthackenough.backend.Utilities;
 
 /**
  * A class to manage the about page as served by the KHE page

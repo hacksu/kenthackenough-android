@@ -1,4 +1,4 @@
-package io.khe.kenthackenough.backend;
+package io.khe.kenthackenough.backend.Messages;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -10,8 +10,6 @@ import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.style.URLSpan;
-import android.util.Log;
 
 import com.github.rjeschke.txtmark.Processor;
 
@@ -19,16 +17,13 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.khe.kenthackenough.MainActivity;
 import io.khe.kenthackenough.R;
+import io.khe.kenthackenough.backend.Utilities;
 
 public class Message implements Comparable<Message> {
     private Date created;

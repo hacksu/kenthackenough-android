@@ -1,4 +1,4 @@
-package io.khe.kenthackenough.backend;
+package io.khe.kenthackenough.backend.Events;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,9 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;

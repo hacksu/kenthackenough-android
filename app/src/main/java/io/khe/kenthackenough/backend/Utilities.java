@@ -32,7 +32,7 @@ public class Utilities {
      * @param html the html to convert
      * @return a SpannableString corresponding to the information in the markdown
      */
-    static SpannableString getSpannableFromHTML(String html) {
+    public static SpannableString getSpannableFromHTML(String html) {
         SpannableString result = new SpannableString(Html.fromHtml(html));
         URLSpan[] links = result.getSpans(0,result.length(), URLSpan.class);
 

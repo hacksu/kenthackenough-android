@@ -8,10 +8,10 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.List;
 
-import io.khe.kenthackenough.backend.AboutManager;
-import io.khe.kenthackenough.backend.EventsManager;
-import io.khe.kenthackenough.backend.LiveFeedManager;
-import io.khe.kenthackenough.backend.Message;
+import io.khe.kenthackenough.backend.About.AboutManager;
+import io.khe.kenthackenough.backend.Events.EventsManager;
+import io.khe.kenthackenough.backend.Messages.LiveFeedManager;
+import io.khe.kenthackenough.backend.Messages.Message;
 import io.khe.kenthackenough.fragments.LiveFeedFragment;
 import io.khe.kenthackenough.GCM.GcmRegisterer;
 

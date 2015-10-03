@@ -13,10 +13,10 @@ import java.util.List;
 import io.khe.kenthackenough.FriendlyTimeSince;
 import io.khe.kenthackenough.KHEApp;
 import io.khe.kenthackenough.R;
-import io.khe.kenthackenough.backend.Event;
-import io.khe.kenthackenough.backend.EventsManager;
-import io.khe.kenthackenough.backend.LiveFeedManager;
-import io.khe.kenthackenough.backend.Message;
+import io.khe.kenthackenough.backend.Events.Event;
+import io.khe.kenthackenough.backend.Events.EventsManager;
+import io.khe.kenthackenough.backend.Messages.LiveFeedManager;
+import io.khe.kenthackenough.backend.Messages.Message;
 
 
 public class DashboardFragment extends Fragment {

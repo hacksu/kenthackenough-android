@@ -1,4 +1,4 @@
-package io.khe.kenthackenough.backend;
+package io.khe.kenthackenough.backend.Events;
 
 import android.app.Notification;
 import android.app.NotificationManager;

@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
-import io.khe.kenthackenough.backend.LiveFeedManager;
+import io.khe.kenthackenough.backend.Messages.LiveFeedManager;
 import io.khe.kenthackenough.fragments.AboutFragment;
 import io.khe.kenthackenough.fragments.DashboardFragment;
 import io.khe.kenthackenough.fragments.EventsFragment;

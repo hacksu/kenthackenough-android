@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import io.khe.kenthackenough.backend.Event;
+import io.khe.kenthackenough.backend.Events.Event;
 
 /**
  * EventNotificationPoster This is a small class designed to post events at a later date

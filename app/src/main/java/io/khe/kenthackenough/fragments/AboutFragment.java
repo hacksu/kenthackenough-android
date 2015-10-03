@@ -2,19 +2,17 @@ package io.khe.kenthackenough.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.TextView;
 
 import io.khe.kenthackenough.Config;
 import io.khe.kenthackenough.KHEApp;
 import io.khe.kenthackenough.R;
-import io.khe.kenthackenough.backend.AboutManager;
+import io.khe.kenthackenough.backend.About.AboutManager;
 
 public class AboutFragment extends Fragment {
     private WebView mAboutWebView;

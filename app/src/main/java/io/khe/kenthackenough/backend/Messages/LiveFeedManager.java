@@ -1,4 +1,4 @@
-package io.khe.kenthackenough.backend;
+package io.khe.kenthackenough.backend.Messages;
 
 import android.content.Context;
 import android.os.Bundle;

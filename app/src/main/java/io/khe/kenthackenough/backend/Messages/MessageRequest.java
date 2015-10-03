@@ -1,4 +1,4 @@
-package io.khe.kenthackenough.backend;
+package io.khe.kenthackenough.backend.Messages;
 
 import android.util.Log;
 
@@ -16,6 +16,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import io.khe.kenthackenough.backend.Messages.Message;
 
 
 /**
