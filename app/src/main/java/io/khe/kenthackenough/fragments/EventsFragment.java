@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,8 +133,8 @@ public class EventsFragment extends Fragment {
         private TextView title;
         private TextView times;
         private TextView description;
+        private TextView location;
         private ImageView icon;
-        private TextView type;
 
         private TextView week_day;
         private TextView date;
@@ -144,8 +147,8 @@ public class EventsFragment extends Fragment {
             title = (TextView) itemView.findViewById(R.id.event_title);
             times = (TextView) itemView.findViewById(R.id.event_time_range);
             description = (TextView) itemView.findViewById(R.id.event_description);
-            type = (TextView) itemView.findViewById(R.id.event_type);
             icon = (ImageView) itemView.findViewById(R.id.icon);
+            location = (TextView) itemView.findViewById(R.id.event_location);
             this.mainView = (LinearLayout) itemView;
         }
 
@@ -156,7 +159,7 @@ public class EventsFragment extends Fragment {
         public void setFromEvent(Event event) {
             title.setText(event.getTitle());
             times.setText(event.getFriendlyTimeRange());
-            type.setText(event.getType());
+            location.setText(event.getLocation());
             description.setText(event.getDescription());
         }
 
@@ -169,7 +172,10 @@ public class EventsFragment extends Fragment {
 
             mainView.addView(header, 0);
 
-            this.week_day.setText(e.getDay());
+            Spannable weekDayUnderlined = new SpannableString(e.getDay());
+            weekDayUnderlined.setSpan(new UnderlineSpan(), 0, weekDayUnderlined.length(), 0);
+
+            this.week_day.setText(weekDayUnderlined);
             this.date.setText(e.getSimpleDate());
         }
         public void removeDayHeader() {
