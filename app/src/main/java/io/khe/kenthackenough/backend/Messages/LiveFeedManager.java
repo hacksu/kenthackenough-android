@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -40,6 +41,7 @@ public class LiveFeedManager {
     private Set<NewMessagesListener> newMessagesListeners = new HashSet<>();
     private Set<UpdatedMessageListener> updatedMessageListeners = new HashSet<>();
     private Set<DeletedMessageListener> deletedMessageListeners = new HashSet<>();
+    private Set<ErrorMessageListener> errorMessageListeners = new HashSet<>();
 
     private int checkDelay;
     private Handler uiThreadHandler;
@@ -66,7 +68,14 @@ public class LiveFeedManager {
      * Starts a repeated request to the server to fetch all messages
      */
     public void start() {
-        listMessages = new MessageRequest(Request.Method.GET, url, null, new Response.Listener<List<Message>>() {
+        listMessages = new MessageRequest(Request.Method.GET, url, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                for (ErrorMessageListener listener: errorMessageListeners) {
+                    listener.error(error);
+                }
+            }
+        }, new Response.Listener<List<Message>>() {
             @Override
             public void onResponse(List<Message> messagesFromServer) {
 
@@ -76,7 +85,7 @@ public class LiveFeedManager {
                 }
                 List<Message> newMessages = new LinkedList<Message>();
 
-                for (Message message: messagesFromServer) {
+                for (Message message : messagesFromServer) {
                     if (message.getCreated().getTime() > newestSaved) {
                         newMessages.add(message);
                     } else {
@@ -298,6 +307,10 @@ public class LiveFeedManager {
         return updatedMessageListeners.remove(listener);
     }
 
+    public void addErrorMessageListener(ErrorMessageListener listener) {
+        errorMessageListeners.add(listener);
+    }
+
     public interface NewMessagesListener {
         /**
          * Called when new messages are relieved from the server
@@ -326,5 +339,8 @@ public class LiveFeedManager {
          * @param allMessages a list of all messages ordered by time sent with the newest first
          */
         void messageUpdated(Message updatedMessage, List<Message> allMessages);
+    }
+    public interface ErrorMessageListener {
+        void error(Object error);
     }
 }

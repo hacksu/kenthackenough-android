@@ -13,14 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import io.khe.kenthackenough.FriendlyTimeSince;
 import io.khe.kenthackenough.KHEApp;
 import io.khe.kenthackenough.R;
-import io.khe.kenthackenough.backend.Events.Event;
-import io.khe.kenthackenough.backend.Events.EventsManager;
 import io.khe.kenthackenough.backend.Messages.LiveFeedManager;
 import io.khe.kenthackenough.backend.Messages.Message;
 
@@ -81,6 +80,13 @@ public class LiveFeedFragment extends Fragment {
             public void newMessagesAdded(List<Message> newMessages, List<Message> allMessages) {
                 refresh.setRefreshing(false);
 
+            }
+        });
+        liveFeedManager.addErrorMessageListener(new LiveFeedManager.ErrorMessageListener() {
+            @Override
+            public void error(Object error) {
+                refresh.setRefreshing(false);
+                Toast.makeText(getActivity(), "Error Fetching Updates", Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -36,6 +37,7 @@ public class EventsManager {
     public List<Event> events = new LinkedList<>();
     private Timer timer = new Timer();
     private Set<EventsUpdateListener> updateListeners = new HashSet<>();
+    private Set<EventErrorListener> errorListeners = new HashSet<>();
     private int checkDelay;
 
     private Handler uiThreadHandler;
@@ -61,7 +63,14 @@ public class EventsManager {
      * Starts a repeated request to the server to fetch all messages
      */
     public void start() {
-        listEvents = new EventsRequest(Request.Method.GET, url, null, new Response.Listener<List<Event>>() {
+        listEvents = new EventsRequest(Request.Method.GET, url, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                for (EventErrorListener listener: errorListeners) {
+                    listener.error(error);
+                }
+            }
+        }, new Response.Listener<List<Event>>() {
             @Override
             public void onResponse(List<Event> eventsFromServer) {
                 events = eventsFromServer;
@@ -255,6 +264,10 @@ public class EventsManager {
         updateListeners.add(listener);
     }
 
+    public void addErrorListener(EventErrorListener listener) {
+        errorListeners.add(listener);
+    }
+
     public interface EventsUpdateListener {
         /**
          * Called when a list of Events is fetched from the server
@@ -262,5 +275,9 @@ public class EventsManager {
          * @param events a list of new messages received ordered by time sent with the newest first
          */
         void eventsFetched(List<Event> events);
+    }
+
+    public interface EventErrorListener {
+        void error(Object error);
     }
 }
