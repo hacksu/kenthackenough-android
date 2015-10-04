@@ -54,7 +54,9 @@ public class KHEApp extends Application {
         liveFeedManager.addDeleteMessageListener(new LiveFeedManager.DeletedMessageListener() {
             @Override
             public void messageDeleted(Message deletedMessage, List<Message> allMessages) {
-                deletedMessage.closeNotification(getApplicationContext());
+                if (deletedMessage != null) {
+                    deletedMessage.closeNotification(getApplicationContext());
+                }
             }
         });
         liveFeedManager.start();
