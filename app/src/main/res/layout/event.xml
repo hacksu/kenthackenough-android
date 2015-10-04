@@ -38,31 +38,15 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+id/event_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/event_time_range"
-            android:text="type"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <Space
-            android:id="@+id/space"
-            android:layout_width="20dp"
-            android:layout_height="15dp"
-            android:layout_below="@+id/event_type"
-            android:layout_centerHorizontal="true" />
-
-        <TextView
             android:id="@+id/event_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/space"
+            android:layout_below="@+id/event_time_range"
             android:text="Description this is some text to fill a space to show how this should work" />
 
         <ImageView
@@ -71,7 +55,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

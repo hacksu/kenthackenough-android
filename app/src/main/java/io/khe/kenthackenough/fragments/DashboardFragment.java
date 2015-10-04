@@ -131,14 +131,15 @@ public class DashboardFragment extends Fragment {
         TextView title = (TextView) from.findViewById(R.id.event_title);
         TextView times = (TextView) from.findViewById(R.id.event_time_range);
         TextView description = (TextView) from.findViewById(R.id.event_description);
-        TextView type = (TextView) from.findViewById(R.id.event_type);
         ImageView icon = (ImageView) from.findViewById(R.id.icon);
 
 
         title.setText(e.getTitle());
         times.setText(e.getFriendlyTimeRange());
-        type.setText(e.getType());
         description.setText(e.getDescription());
+        if (e.getDescription().length() == 0) {
+            description.setVisibility(View.GONE);
+        }
 
         return from;
     }
