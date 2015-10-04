@@ -15,8 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/dark_grey"
-            android:theme="@style/ThemeOverlay.KHE.ActionBar"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            android:theme="@style/ThemeOverlay.KHE.ActionBar" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_bar"
