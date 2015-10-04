@@ -114,9 +114,14 @@ public class Event implements Comparable<Event>, Serializable{
     }
 
     public String getFriendlyTimeRange() {
-        return String.format("%tl:%tM%s - %tl:%tM%s",
-                getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1)?"am":"pm",
-                getEnd(), getEnd(), (getEnd().get(Calendar.AM_PM) == 1)?"am":"pm");
+        if(getStart().equals(getEnd())) {
+            return String.format("%tl:%tM%s",
+                    getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1)?"am":"pm");
+        } else {
+            return String.format("%tl:%tM%s - %tl:%tM%s",
+                    getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1) ? "am" : "pm",
+                    getEnd(), getEnd(), (getEnd().get(Calendar.AM_PM) == 1) ? "am" : "pm");
+        }
     }
 
     public String getDay() {
