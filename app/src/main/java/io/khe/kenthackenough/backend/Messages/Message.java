@@ -102,7 +102,7 @@ public class Message implements Comparable<Message> {
 
         Intent resultIntent = new Intent(context, MainActivity.class);
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        resultIntent.putExtra("view", 1);
+        resultIntent.putExtra("view", 2);
 
 
 
