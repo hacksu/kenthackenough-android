@@ -119,8 +119,8 @@ public class Event implements Comparable<Event>, Serializable{
                     getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1)?"am":"pm");
         } else {
             return String.format("%tl:%tM%s - %tl:%tM%s",
-                    getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1) ? "am" : "pm",
-                    getEnd(), getEnd(), (getEnd().get(Calendar.AM_PM) == 1) ? "am" : "pm");
+                    getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1) ? "pm" : "am",
+                    getEnd(), getEnd(), (getEnd().get(Calendar.AM_PM) == 1) ? "pm" : "am");
         }
     }
 
