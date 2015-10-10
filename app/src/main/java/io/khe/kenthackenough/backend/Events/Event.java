@@ -116,7 +116,7 @@ public class Event implements Comparable<Event>, Serializable{
     public String getFriendlyTimeRange() {
         if(getStart().equals(getEnd())) {
             return String.format("%tl:%tM%s",
-                    getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1)?"am":"pm");
+                    getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1)?"pm":"am");
         } else {
             return String.format("%tl:%tM%s - %tl:%tM%s",
                     getStart(), getStart(), (getStart().get(Calendar.AM_PM) == 1) ? "pm" : "am",
